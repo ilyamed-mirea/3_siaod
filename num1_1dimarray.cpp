@@ -12,14 +12,32 @@ string to2(int x) {
 	return res;
 }
 
+int* getArr() {
+	int length;
+	cout << "write array length" << endl;
+	cin >> length;
+	int* arr = new int[length];
+	cout << "write values" << endl;
+	for (int i = 0; i < length; i++) {
+		cin >> arr[i];
+	}
+	return arr;
+}
+
+void printArr(int *arr, int length) {
+	cout << "your array:" << endl;
+	for (int i = 0; i < length; i++) {
+		cout << arr[i] << endl;
+	}
+	cout << "array end" << endl;
+}
+
 int num1() {
 	//initialize
-	int length = 5;
-	int *arr = new int[length];
-	arr[0] = 5; arr[2] = 6; arr[1] = 7;
-
+	int *arr = getArr(); //{ 5,273,6,7,8,2340 }; 273 = три единицы
+	printArr(arr, 4);
 	//n1
-	for (int i = 0; i < length; i++) {
+	for (int i = 0; i < 6; i++) {
 		string in2 = to2(arr[i]);
 		int colv1 = 0;
 		for (int j = 0; j < in2.length(); j++) {
