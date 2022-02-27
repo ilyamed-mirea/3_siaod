@@ -1,0 +1,77 @@
+#include "time.h"
+#include <iostream>
+using namespace std;
+
+void inputArr(int *arr, int length) {
+    //int* arr = new int[length];
+    cout << "write values" << endl;
+    for (int i = 0; i < length; i++) {
+        cin >> arr[i];
+    }
+}
+
+void inputRandArr(int *arr, int length) {
+    srand(time(NULL));
+    for (int i = 0; i < length; i++) {
+        arr[i] = rand()%100;
+    }
+}
+
+void insert(int *arr, int length, int num, int pos) {
+    int temp1 = arr[pos];
+    for (int i=pos+1;i<length;i++) {
+    //for (int i=length;i>pos;i++) {
+        int temp2=arr[i];
+        arr[i]=temp1;
+        temp1=temp2;
+        //arr[i]=arr[i-1];
+    }
+    arr[pos] = num;
+}
+
+void delet(int *arr, int length, int pos) {
+    for (int i=pos;i<length;i++) {
+        arr[i]=arr[i+1];
+    }
+}
+
+void printArr(int *arr, int length) {
+    cout << "your array:" << endl;
+    for (int i = 0; i < length; i++) {
+        cout << arr[i] << endl;
+    }
+    cout << "array end" << endl;
+}
+
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    int n = -1, pos = -1, num = 0;
+    const int LENGTH = 1000;
+    while (n<0 || n>LENGTH) {
+        cout << "write N" << endl;
+        cin >> n;
+    };
+    
+    int *arr = new int[LENGTH];
+    //inputArr(arr, n);
+    //printArr(arr, n);
+    inputRandArr(arr, n);
+    printArr(arr, n);
+    /*while (pos<0 || pos>=LENGTH) {
+        cout << "write num,pos" << endl;
+        cin>>num>>pos;
+    }
+    insert(arr,LENGTH,num,pos);
+    cout << endl;
+    printArr(arr,n);
+     */
+    while (pos<0 || pos>=LENGTH) {
+        cout << "write pos to delete" << endl;
+        cin>>pos;
+    };
+    delet(arr,LENGTH,pos);
+    printArr(arr,n);
+    //cout << "write array length" << endl;
+    //cin >> length;
+    return 0;
+}
