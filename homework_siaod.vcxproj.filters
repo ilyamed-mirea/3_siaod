@@ -18,10 +18,10 @@
     <ClCompile Include="n1.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\n2\n2.cpp">
+    <ClCompile Include="n2.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\n3\n3.cpp">
+    <ClCompile Include="n3.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
