@@ -3,23 +3,22 @@
 using namespace std;
 const int length = 100;
 
-string to2(int x) {
-	string res = "";
-	while (x > 0) {
-		res += to_string(x % 2);
-		x = x / 2;
-	}
-	return res;
-}
-
-int findIndex(int *arr, int length) {
+int findIndex(int* arr, int length) {
 	for (int i = 0; i < length; i++) {
-		string in2 = to2(arr[i]);
 		int colv1 = 0;
-		for (int j = 0; j < in2.length(); j++) {
-			if (in2[j] == '1') {
+		int cur10 = arr[i];
+		int cur2 = 0;
+		int d = 1;
+		while (cur10) {
+			cur2 += cur10 % 2 *d;
+			cur10 /= 2;
+			d *= 10;
+		}
+		while (cur2) {
+			if (cur2%10 == 1) {
 				colv1++;
 			}
+			cur2 /= 10;
 		}
 		if (colv1 == 3) {
 			return i;
@@ -28,7 +27,7 @@ int findIndex(int *arr, int length) {
 	return -1; //error flag
 }
 
-void insertAfter(int *arr, int length, int num, int index) {
+void insertAfter(int* arr, int& length, int num, int index) {
 	index++;
 	for (int i = length; i > index; i--) {
 		arr[i] = arr[i - 1];
@@ -36,10 +35,11 @@ void insertAfter(int *arr, int length, int num, int index) {
 	arr[index] = num;
 }
 
-void deleteElement(int *arr,int n,int index) {
+void deleteElement(int* arr, int& n, int index) {
 	for (int i = index; i < n; i++) {
 		arr[i] = arr[i + 1];
 	}
+	n -= 1;
 }
 
 void getArr(int* arr, int length) {
@@ -65,6 +65,7 @@ void printArr(int* arr, int length) {
 		cout << arr[i] << endl;
 	}
 }
+
 int main() {
 
 	setlocale(0, "Russian");
@@ -119,7 +120,7 @@ int main() {
 			if (index == -1) {
 				cout << "ошибка. элемент не найден." << endl;
 			}
-			else cout << "Индекс: " << index  << endl;
+			else cout << "Индекс: " << index << endl;
 			system("pause");
 			break;
 		}
@@ -144,7 +145,6 @@ int main() {
 			cin >> num;
 			cout << "Массив со вставленным элементом" << endl;
 			insertAfter(arr, n, num, index);
-			n++;
 			printArr(arr, n);
 			system("pause");
 			break;
@@ -160,18 +160,15 @@ int main() {
 			int found = findIndex(arr, n);
 			while (found != -1) {
 				deleteElement(arr, n, found);
-				n--;
 				found = findIndex(arr, n);
 			}
-			
+
 			printArr(arr, n);
 			system("pause");
 			break;
 		}
 
-		case 0: {
-			return 0;
-		}
+		case 0: { return 0; }
 		default: {
 			chooser = 100;
 			break;
@@ -179,6 +176,5 @@ int main() {
 
 		}
 
-	}
-	return 0;
+	}return 0;
 }

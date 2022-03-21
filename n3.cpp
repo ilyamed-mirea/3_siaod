@@ -3,23 +3,22 @@
 #include <vector>
 using namespace std;
 
-string to2(int x) {
-	string res = "";
-	while (x > 0) {
-		res += to_string(x % 2);
-		x = x / 2;
-	}
-	return res;
-}
-
 int findIndex(vector <int> &arr) {
 	for (int i = 0; i < arr.size(); i++) {
-		string in2 = to2(arr[i]);
 		int colv1 = 0;
-		for (int j = 0; j < in2.length(); j++) {
-			if (in2[j] == '1') {
+		int cur10 = arr[i];
+		int cur2 = 0;
+		int d = 1;
+		while (cur10) {
+			cur2 += cur10 % 2 * d;
+			cur10 /= 2;
+			d *= 10;
+		}
+		while (cur2) {
+			if (cur2 % 10 == 1) {
 				colv1++;
 			}
+			cur2 /= 10;
 		}
 		if (colv1 == 3) {
 			return i;
@@ -61,6 +60,7 @@ void printArr(vector <int>& arr) {
 		cout << arr.at(i) << endl;
 	}
 }
+
 int main() {
 
 	setlocale(0, "Russian");
@@ -173,9 +173,7 @@ int main() {
 			chooser = 100;
 			break;
 		}
-
 		}
-
 	}
 	return 0;
 }
