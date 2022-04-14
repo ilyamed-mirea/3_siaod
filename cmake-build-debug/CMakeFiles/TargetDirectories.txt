@@ -1,3 +1,0 @@
-C:/Users/0ilya/CLionProjects/mirea_siaod/cmake-build-debug/CMakeFiles/siaod.dir
-C:/Users/0ilya/CLionProjects/mirea_siaod/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/0ilya/CLionProjects/mirea_siaod/cmake-build-debug/CMakeFiles/rebuild_cache.dir
