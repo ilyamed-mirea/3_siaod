@@ -1,12 +1,9 @@
 #include <iostream>
 #include <ctime>
-
 using namespace std;
-const int MAXROWS = 100;
-const int MAXCOLS = 100;
 
 // заполнение с клавиатуры
-void getFromKeyboard(int matrix[][MAXCOLS], int diag) {
+void getFromKeyboard(int **matrix, int diag) {
     for (int i = 0; i < diag; i++) {
         for (int j = 0; j < diag; j++) {
             int a;
@@ -29,7 +26,7 @@ void getFromKeyboard(int matrix[][MAXCOLS], int diag) {
 }
 
 // заполнение матрицы случайными значениями
-void getByRandom(int matrix[][MAXCOLS], int diag) {
+void getByRandom(int **matrix, int diag) {
     srand(time(NULL));
     for (int i = 0; i < diag; i++) {
         for (int j = 0; j < diag; j++) {
@@ -40,7 +37,7 @@ void getByRandom(int matrix[][MAXCOLS], int diag) {
 }
 
 // вывод матрицы
-void print(int matrix[][MAXCOLS], int diag) {
+void print(int **matrix, int diag) {
     for (int i = 0; i < diag; i++) {
         for (int j = 0; j < diag; j++) {
             cout << "element [" << i << "][" << j << "]: " << matrix[i][j] << endl;
@@ -49,7 +46,7 @@ void print(int matrix[][MAXCOLS], int diag) {
 }
 
 // заполнение массивов диагоналей
-void generateArrays(int matrix[][MAXCOLS], int diag, int *&arrMain, int *&arrDop) {
+void generateArrays(int **matrix, int diag, int *&arrMain, int *&arrDop) {
     for (int i = 0; i < diag; i++) {
         arrMain[i] = matrix[i][i];
         arrDop[i] = matrix[i][diag - i - 1];
@@ -74,12 +71,7 @@ void printRes(int *&arr, int diag) {
 
 int main() {
     system("chcp 65001");
-//    int matrix[MAXCOLS][MAXROWS]{{7,2,2,1},
-//                                 {2,6,9,2},
-//                                 {2,8,4,2},
-//                                 {1,2,2,3},};
-//    int diag = 4;
-    int matrix[MAXCOLS][MAXROWS]{0};
+    int **matrix;
     int diag = 0;
     int chooser = 100;
     int *res;
@@ -88,7 +80,7 @@ int main() {
         system("cls");
 
         cout << "Лабораторная работа №2 ИНБО-08-21 Медведев И.В. Вариант 16" << endl << endl;
-        cout << "Задание 1" << endl;
+        cout << "Задание 2" << endl;
         cout << "Меню\n";
         cout << "1) Заполнить матрицу\n";
         cout << "2) Вывести матрицу на экран\n";
@@ -103,10 +95,13 @@ int main() {
             case 1: {
                 cout << "Введите длину диагонали матрицы" << endl;
                 while (cin >> diag) {
-                    if (diag > 0 && diag < MAXROWS && diag < MAXCOLS) break;
+                    if (diag > 0) break;
                     else cout << "ошибка. неправильное значение. попробуйте еще раз" << endl;
                 };
                 res = new int[diag];
+                matrix = new int* [diag];
+                for (int i = 0; i < diag; i++)
+                    matrix[i] = new int[diag];
                 cout
                         << "Введите 1 если хотите заполнить матрицу с клавиатуры или 0 если хотите заполнить ее случайными числами"
                         << endl;
@@ -125,6 +120,7 @@ int main() {
             case 2: {
                 if (diag==0) {
                     cout << "Матрица не задана." << endl;
+                    system("pause");
                     break;
                 }
                 cout << "Вывод матрицы" << endl;
@@ -135,6 +131,7 @@ int main() {
             case 3: {
                 if (diag==0) {
                     cout << "Матрица не задана." << endl;
+                    system("pause");
                     break;
                 }
                 int *arrMain = new int[diag];
@@ -149,6 +146,7 @@ int main() {
             case 4: {
                 if (diag==0) {
                     cout << "Матрица не задана." << endl;
+                    system("pause");
                     break;
                 }
                 printRes(res, diag);
@@ -158,6 +156,8 @@ int main() {
 
             case 0: {
                 delete[] res;
+                for (int i = 0; i < diag; i++)
+                    delete []matrix[i];
                 return 0;
             }
             default: {
