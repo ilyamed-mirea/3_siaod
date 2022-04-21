@@ -1,55 +1,161 @@
 #include <iostream>
-using namespace std;
-//toupper()
+#include <Windows.h>
 
-void addWordToString(char *newString, char *slovo) {
-    int length = 0;
-    int i=0;
-    while (*newString != '\0') {
-        cout << int(*newString) << endl;
-        if (0<=int(*newString) && int(*newString)<=127) length++;
-        else break;
-        i++;
-        newString++;
-    }
-    cout << length << endl;
-    for (i = 0; i < 20; i++) {
-        newString[length+i-1] = slovo[i];
-    }
-    newString[i]='\0';
+using namespace std;
+
+void copyStr(const char *from, char *to) {
+    for (char *p = to; (*p = *from) != '\0'; ++p, ++from);
 }
 
-char toWords(char *s) {
+void addStr(const char *add, char *base) {
+    char newStr[1024];
+    int i = 0;
+    while (*base != '\0') {
+        newStr[i] = *base;
+        base++;
+        i++;
+    }
+    while (*add != '\0') {
+        newStr[i] = *add;
+        add++;
+        i++;
+    }
+    newStr[i] = '\0';
+    copyStr(newStr, base);
+}
+
+void addWordToString(char *newString, char *slovo, char *razdel) {
+    int length = 0;
+    int slovoLength = 0;
+    bool fl = true;
+    const char *glasn = "àÀîÎóÓûÛèÈåÅ¸¨ýÝþÞÿß";
+    for (; *slovo != '\0'; slovoLength++, slovo++);
+    for (; *newString != '\0'; newString++, length++);
+    slovo -= slovoLength;
+    newString -= length;
+    for (int j = 0; j < 20; j++) {
+        if (slovo[0] == glasn[j]) {
+            fl = false;
+            break;
+        }
+    }
+    if (fl) {
+        int i = 0;
+
+        for (; i < slovoLength; i++) {
+            newString[length + i] = slovo[i];
+        }
+
+        newString[length + i] = *razdel;
+        *razdel++;
+        while (*razdel == ' ') {
+            i++;
+            newString[length + i] = *razdel;
+            *razdel++;
+        }
+        i++;
+        newString[length + i] = '\0';
+    }
+}
+
+void toWords(char *s) {
     char slovo[20];
-    char newString[1024];
-    int i,j;i=0;
-    while(s[i]!='\0')		//¤® ª®­æ  â¥ªáâ 
+    char newString[1024] = "";
+    int j;
+    int i = 0;
+    while (s[i] != '\0')        //äî êîíöà òåêñòà
     {
-        j=0;
-        while(s[i]!='\0' && (s[i])!=' ' && (s[i])!=',')	//¤® ª®­æ  á«®¢ 
+        j = 0;
+        while (s[i] != '\0' && (s[i]) != ' ' && (s[i]) != ',')    //äî êîíöà ñëîâà
         {
-            slovo[j]=s[i];
+            slovo[j] = s[i];
             i++;
             j++;
         }
-        slovo[j]='\0';
-        if (j!=0) addWordToString(newString, slovo);
-        cout << "aand " << newString << endl;
-        if(s[i]!='\0')
-        {
-            i++;//ã©â¨ á à §¤¥«¨â¥«ï á«®¢ , ¥á«¨ ®­® ­¥ ¯®á«¥¤­¥¥
+        slovo[j] = '\0';
+        if (j != 0) addWordToString(newString, slovo, &s[i]);
+        //puts(slovo);
+        while ((s[i]) == ' ' || (s[i]) == ',') {
+            i++;
         }
+        /*if (s[i] != '\0') {
+            i++;//óéòè ñ ðàçäåëèòåëÿ ñëîâà, åñëè îíî íå ïîñëåäíåå
+        }*/
     }
-    return *newString;
+    copyStr(newString, s);
+}
+
+void capsLock(char *str) {
+    int i = 0;
+    while (*(str + i) != '\0') {
+        if (*(str + i) + 256 > 223 && *(str + i) + 256 < 256) {
+            *(str + i) -= 32;
+        }
+        i++;
+    }
+}
+
+void add_(char *str) {
+    char newString[1024];
+    int gap = 0;
+    char slovo1[1];
+    char slovo2[1];
+    int i = 0;
+    while (str[i] != '\0') {
+        int j = 0;
+        while (str[i] != '\0' && (str[i]) != ' ' && (str[i]) != ',')    //äî êîíöà ñëîâà
+        {
+            newString[i + gap] = str[i];
+            i++;
+            j++;
+        }
+        if (str[i] == '\0') break;
+        slovo1[0] = str[i - 1];
+        int dopgap = 0;
+        while (str[i] == ' ' || str[i] == ',') {
+            newString[i + gap] = str[i];
+            i++;
+            dopgap++; //ìíîãî ïðîáåëîâ ïîäðÿä
+        }; //ìíîãî ïðîáåëîâ
+        slovo2[0] = str[i];
+        //cout << slovo1[0] << "    " << slovo2[0] << "   " << (slovo1[0] == slovo2[0]) << endl;
+        if (slovo1[0] == slovo2[0]) {
+            gap-=dopgap;
+            newString[i + gap] = '-';
+            gap++;
+            newString[i + gap] = '*';
+            gap++;
+            newString[i + gap] = '-';
+            gap++;
+            /*char podstr[4] = "-*-";
+            addStr(podstr,newString);*/
+        }
+       /* while (str[i] != '\0' && (str[i]) != ' ' && (str[i]) != ',')    //äî êîíöà ñëîâà
+        {
+            newString[i + gap] = str[i];
+            i++;
+        };
+        while (str[i] != '\0' && (str[i] == ' ' || str[i] == ',')) {
+            newString[i + gap] = str[i];
+            i++;
+        };*/
+    }
+    newString[i+gap]='\0';
+    //cout << newString << endl;
+    copyStr(newString, str);
 }
 
 int main() {
-
-    char str[1024];// = "à¨¢¥â ¬®© ¤àã£, ª ª ã â¥¡ï ¤¥« , ¯ à¥­ì ¨ªà   ªà¨« « ¬¯ ";
-    cout << "‚¢¥¤¨â¥ áâà®ªã: " << endl;
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    char str[1024];// = "Ïðèâåò ìîé äðóã, êàê ó òåáÿ äåëà, ïàðåíü èêðà àêðèë ëàìïà";
+    //int strLength = 0;
+    //cout << "Ââåäèòå ñòðîêó: " << endl;
     gets(str);
-    *str = toWords(str);
-    //cout << str;
+    //for(int i=0;str[i] != '\0';i++,strLength++);
+    toWords(str);
+    capsLock(str);
+    puts(str);
     system("pause");
     return 0;
 }
