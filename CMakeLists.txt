@@ -3,4 +3,4 @@ project(siaod)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(siaod n3/n2.cpp)
+add_executable(siaod n5/n1.cpp)
