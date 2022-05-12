@@ -93,18 +93,70 @@ void deleteDiseaseByCode(patient *pat, int code) {
 
 int main() {
     system("chcp 65001");
-    table *table;
+    table *table = new struct table;
     cout << "Сколько пациентов вы хотите создать?" << endl;
-    int colv;
+    int colv, pol, code;
     cin >> colv;
     for (int i=0;i<colv;i++) {
         cout << "Создание " << i << " пациента" << endl;
-        patient *newPatient = new patient();
+        patient *newPatient = new patient;
         newPatient = initPatient(newPatient);
         addPatientInTable(table, newPatient);
     }
 
+
+    cout << "Сколько заболеваний вы хотите добавить?" << endl;
+    cin >> colv;
+    for (int i=0;i<colv;i++) {
+        string date;
+        cout << "Введите номер полиса пациента, которому хотите добавить заболевание";
+        cin >> pol;
+        patient *pat;
+        for (int j=0;j<table->size;j++) { //поиск пациента по номеру полиса
+            if (table->patientList[j]->policy==pol) {
+                pat = table->patientList[j];
+                break;
+            }
+        }
+        cout << "Введите код болезни";
+        cin >> code;
+        cout << "Введите дату установки диагноза";
+        cin >> date;
+        disease dis;
+        dis.code = code;
+        dis.date = date;
+        addDisease(pat, dis);
+    }
+
     printTable(table);
+
+    cout << "Введите код болезни для формирования списка людей с этой болезнью" << endl;
+    cin >> code;
+    vector<patient> patList = formListByCode(table, code);
+    for (int i=0;i<patList.size();i++) {
+        cout << "Список сформирован" << endl << "Пациент " << i+1 << endl;
+        patient *curPatient = &patList[i];
+        cout << "Фамилия: " << curPatient->surname << endl;
+        cout << "Имя: " << curPatient->name << endl;
+        cout << "Отчество: " << curPatient->patronymic << endl;
+        printDiseaseList(curPatient->diseaseList);
+    }
+
+    cout << "Введите номер полиса пациента и код заболевания, которое необходимо удалить" << endl;
+    cin >> pol >> code;
+    patient *pat;
+    for (int j=0;j<table->size;j++) { //поиск пациента по номеру полиса
+        if (table->patientList[j]->policy==pol) {
+            pat = table->patientList[j];
+            break;
+        }
+    }
+    deleteDiseaseByCode(pat, code);
+
+
+    cout << "Болезнь удалена" << endl;
+    printTable(table);
+
     system("pause");
     return 0;
 };
