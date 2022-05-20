@@ -23,9 +23,7 @@ struct patient {
 };
 
 struct table {
-    int size = 0;
-    static const int maxSize = 100;
-    patient *patientList[maxSize]{};
+    vector<patient*> patientList;
 };
 
 void printDiseaseList(vector<disease> list) {
@@ -50,7 +48,7 @@ void printPatient(patient *pat) {
 
 void printTable(table *tab) {
     cout << "Вывод таблицы" << endl;
-    for (int i=0;i<tab->size;i++) {
+    for (int i=0;i<tab->patientList.size();i++) {
         cout << endl << "Пациент " << i+1 << ": " << endl;
         patient *curPatient = tab->patientList[i];
         printPatient(curPatient);
@@ -76,17 +74,12 @@ patient *initPatient(patient *newPatient) {
 }
 
 void addPatientInTable(table *t, patient *newPatient) {
-    if (t->size+1>100) {
-        cout << "Превышен максимальный размер массива. вставка не удалась" << endl;
-        return;
-    }
-    t->patientList[t->size] = newPatient;
-    t->size++;
+    t->patientList.push_back(newPatient);
 }
 
 vector<patient> formListByCode(table *t, int code) {
     vector<patient> patientList;
-    for (int i=0;i<t->size;i++) {
+    for (int i=0;i<t->patientList.size();i++) {
         patient *curPatient = t->patientList[i];
         int counter = 0; //счетчик количества заболеваний
         for (int j=0;j<curPatient->diseaseList.size();j++) {
@@ -137,7 +130,7 @@ int main() {
         bool fl = true;
         cout << "Введите номер полиса пациента, которому хотите добавить заболевание" << endl;
         cin >> pol;
-        for (int j=0;j<table->size;j++) { //поиск пациента по номеру полиса
+        for (int j=0;j<table->patientList.size();j++) { //поиск пациента по номеру полиса
             if (table->patientList[j]->policy==pol) {
                 pat = table->patientList[j];
                 fl=false;
@@ -164,13 +157,16 @@ int main() {
     cin >> code;
     vector<patient> patList = formListByCode(table, code);
     cout << "Список сформирован" << endl;
-    for (int i=0;i<patList.size();i++)
+    for (int i=0;i<patList.size();i++) {
+        cout << "Пациент " << i+1 << endl;
         printPatient(&patList[i]);
+        cout << endl;
+    }
 
     cout << endl << "Введите номер полиса пациента и код заболевания, которое необходимо удалить" << endl;
     cin >> pol >> code;
     patient *pat;
-    for (int j=0;j<table->size;j++) { //поиск пациента по номеру полиса
+    for (int j=0;j<table->patientList.size();j++) { //поиск пациента по номеру полиса
         if (table->patientList[j]->policy==pol) {
             pat = table->patientList[j];
             break;
