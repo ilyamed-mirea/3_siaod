@@ -12,11 +12,13 @@ using namespace std;
 class base;
 //using structSignal = void(base::*)(string&);
 //using structHandler = void(base::*)(string);
-typedef void(base::*structSignal)(string&);
+typedef void(base::*structSignal)(base*, string&);
 typedef void(base::*structHandler)(string);
 //параметризованные макроопределения предпроцессора:
-#define SIGNAL_D(signal_f) ((structSignal)(signal_f)) //
-#define HANDLER_D(handler_f) ((structHandler)(handler_f)) //
+#define SIGNAL_D(S, signal_f) ((structSignal)(&S::signal_f)) //
+#define HANDLER_D(H, handler_f) ((structHandler)(&H::handler_f)) //
+//#define SIGNAL_D(signal_f) ((structSignal)(signal_f)) //
+//#define HANDLER_D(handler_f) ((structHandler)(handler_f)) //
 /*
 // structSignal = (void(S::*) (string&))
 #define SIGNAL_D(S, signal_f) ( (void(S::*) (string&)) (&S::signal_f)) //дляполучения указателя на метод сигнала
