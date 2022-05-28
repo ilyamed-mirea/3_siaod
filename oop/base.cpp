@@ -193,7 +193,7 @@ void base::deleteConnection(structSignal newStructSignal, base *newObjConnection
         if(connections[i].signalConnection == newStructSignal && connections[i].objConnection == newObjConnection && connections[i].handlerConnection == newStructHandler)
         {
             connections.erase(connections.begin() + i);
-            return;
+            //return;
         }
     }
 }
@@ -202,12 +202,13 @@ void base::emitSignal(structSignal emitter, string command){
         return;
     (this->*emitter)(command);
     for (int i = 0; i < connections.size(); i++)
-        if(connections[i].signalConnection == emitter && connections[i].objConnection->readyToConnect)
-            (connections[i].objConnection->*connections[i].handlerConnection)(command);
+        if(connections[i].signalConnection == emitter && connections[i].objConnection->readyToConnect==1)
+            ((connections[i].objConnection)->*connections[i].handlerConnection)(command); //this,command
 }
 void base::setCondition(int newCondition) {
     this->readyToConnect = newCondition;
 }
+
 /*
 base::handler(string signStr);
 base::signal(string *signStr);*/

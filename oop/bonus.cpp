@@ -1,5 +1,6 @@
 #include "bonus.h"
 #include "classes.h"
+#include "base.h"
 void bonus::build_tree_b() {
     int index = 1; // кол-во объектов в objectsB, 1 так как корневой элемент вводится вне цикла
     int i = 0; // просто итератор
@@ -138,12 +139,7 @@ string bonus::isHeadNotFound_b() {
     return headNotFound;
 }
 
-structSignal recognitionSignal(){
-    return SIGNAL(base::signal);
-}
-structHandler recognitionHandler(){
-    return HANDLER(base::handler);
-}
+
 void bonus::configureConnections_b() {
     string from,to,command,coord,msg;
     int newCondition;
@@ -169,7 +165,7 @@ void bonus::configureConnections_b() {
             cin >> from >> to;
             objFrom = findObjectByCoord_b(from, objectsB[0]);
             objTo = findObjectByCoord_b(to, objectsB[0]);
-            objFrom->setConnection(recognitionSignal(), objTo, recognitionHandler());
+            [](base* objFrom,base* objTo){objFrom->setConnection(SIGNAL_D(base::signal), objTo, HANDLER_D(base::handler)); }(objFrom, objTo);
             /*[](vector <base*> objectsB){ //лямбда-функция (анонимная функция), в [] можно отлавливать переменную (либо по значению без возможности редактирования, либо по ссылке с возможностью редактирования)
                 (*(objectsB[1])).setConnection(recognitionSignal(), objectsB[2], recognitionHandler());
                 //(*(objectsB[(objectsB).size() - 1])).setConnection(recognitionSignal(), objectsB[(objectsB).size() - 3], recognitionHandler());
@@ -183,7 +179,7 @@ void bonus::configureConnections_b() {
             cin >> from >> to;
             objFrom = findObjectByCoord_b(from, objectsB[0]);
             objTo = findObjectByCoord_b(to, objectsB[0]);
-            objFrom->deleteConnection(recognitionSignal(), objTo, recognitionHandler());
+            objFrom->deleteConnection(SIGNAL_D(base::signal), objTo, HANDLER_D(base::handler));
         }
         else if (command == "SET_CONDITION") {
             cin >> from >> newCondition;

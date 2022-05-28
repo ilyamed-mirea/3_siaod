@@ -10,11 +10,18 @@
 #include <iostream>
 using namespace std;
 class base;
-using structSignal = void(base::*)(string&);
-using structHandler = void(base::*)(string);
-#define SIGNAL(signal_f) ((structSignal)(&signal_f)) //определяет идентификатор и последовательность символов, которой будет замещаться данный идентификатор при его обнаружении
-#define HANDLER(handler_f) ((structHandler)(&handler_f))
-
+//using structSignal = void(base::*)(string&);
+//using structHandler = void(base::*)(string);
+typedef void(base::*structSignal)(string&);
+typedef void(base::*structHandler)(string);
+//параметризованные макроопределения предпроцессора:
+#define SIGNAL_D(signal_f) ((structSignal)(signal_f)) //
+#define HANDLER_D(handler_f) ((structHandler)(handler_f)) //
+/*
+// structSignal = (void(S::*) (string&))
+#define SIGNAL_D(S, signal_f) ( (void(S::*) (string&)) (&S::signal_f)) //дляполучения указателя на метод сигнала
+#define HANDLER_D(H, hendler_f) ((void(H::*) (base*, string&))(&H::hendler_f)) //для получения указателя на метод обработчика
+*/
 class base {
 public:
     string name; //имя объекта
@@ -53,7 +60,7 @@ public:
     base* findObjectByCoord(string coord);
     base* getRoot(base *obj);
     void handler(string signStr) {
-        cout << "\nSignal to " << getName() <<" Text: " << signStr << endl;
+        cout << endl << "Signal to " << getName() <<" Text: " << signStr << endl;
     }
     void signal(string *signStr) {
         *signStr += " (class: " + to_string(getClass()) + ")";
@@ -64,7 +71,13 @@ public:
     void emitSignal(structSignal emitter, string command);
     base* getHead(base *head);
     void setCondition(int newCondition);
-
+    structSignal recognitionSignal(){
+        return SIGNAL_D(base::signal);
+    }
+    structHandler recognitionHandler(){
+        return HANDLER_D(base::handler);
+    }
 };
+
 #include "base.cpp"
 #endif //SIAOD_BASE_H
