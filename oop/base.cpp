@@ -1,4 +1,5 @@
 #include "base.h"
+
 void base::setName(string name) {
     this->name = name;
 }
@@ -7,15 +8,15 @@ string base::getName() {
 }
 void base::printTree(int otstupColv) { //вывод дерева
     if (!printed) { //если элемент еще не выводился
-        if (otstupColv!=0) {
+        if (otstupColv != 0) {
             cout << endl; // перенос строки от предыдущей
         }
-        string otstup = " ";
+        string otstup = "    ";
         for (int i = 0; i < otstupColv; i++) {
             cout << otstup; // вывод нужного количества отступов
         }
         cout << name;// << " " << getClass() вывод имени текущего объекта
-                printed = true; // помечаем что уже выводили этот объект
+        printed = true; // помечаем что уже выводили этот объект
         if (pointers.size()>0) {
             for (int i = 0; i < pointers.size(); i++) { //вывод его детей с увелич. отступом
                 pointers[i]->printTree(otstupColv+1);
@@ -28,7 +29,7 @@ void base::printTreeReady(int otstupColv) { //вывод дерева готов
         if (otstupColv!=0) {
             cout << endl;
         }
-        string otstup = " ";
+        string otstup = "    ";
         for (int i = 0; i < otstupColv; i++) {
             cout << otstup;
         }
@@ -44,18 +45,20 @@ void base::printTreeReady(int otstupColv) { //вывод дерева готов
 void base::setHead(base *head) {
     father=head;
 }
+base* base::getHead(base *head) {
+    return father;
+}
 void base::changeHead(base *head) { //смена головного объекта (например перенос к другому родительскому)
     for (int i=0;i<father->pointers.size();i++) {
         if ((father->pointers[i])->getName() == getName()) {
-            father->pointers.erase(father->pointers.begin()
-                                   +i); //удаляем из родительского
+            father->pointers.erase(father->pointers.begin()+i); //удаляем из родительского
         }
     }
     setHead(head);//устанавливаем родителя новый элемент
     father->pointers.push_back(this);//добавляем объект в список детей..родителя
 }
 base* base::findObject(string name) { //найти объект
-    if (getName() == name) // если искомый объекь - текущий = вернуть ег
+    if (getName() == name) // если искомый объекь - текущий = вернуть его
         return this;
     else if (pointers.size()>0) { //если есть дети - идем по ним
         for (int i=0; i<pointers.size();i++) {
@@ -72,7 +75,7 @@ int base::getState() {
 void base::setState(int newState) { // установка состояния
     base *f = this;
     while (f!=nullptr && newState!=0) { // проверка, не выключены ли родители
-                f = f->father;
+        f = f->father;
         if (f!=nullptr && father->getState()==0) { // проход по родителям вверх, при нахождении выключенного выход
             return;
         }
@@ -98,3 +101,113 @@ void base::clearPrinted() { //сделать у всех элементов prin
         }
     }
 }
+base* base::getRoot(base *obj) {
+    base *p = obj;
+    while (p->father!=nullptr) {
+        p = p->father;	//идем вверх по иерархии до корневого
+    }
+    return p; //возврат корневого элемента
+}
+base* base::findObjectByCoord(string coord) {
+    int i = 0;
+    string name = "";
+    base *p = getRoot(this); //корневой объект
+    if (coord=="/") { // вернуть корень
+        return p;
+    }
+    else if (coord[i]=='/' && coord[i+1]=='/') { //если поиск от корневого
+        i+=2; //пропуск //
+        for (;i<coord.length();i++) {
+            name+=coord[i]; // считываем имя объекта, который нужно найти
+        }
+        return p->findObjectByCoord(name); //находим и возвращаем
+    }
+    else if (coord==".") { //если текущий объект
+        return this;
+    }
+    else if (coord[i]=='/') { //абсолютная координата от корневого
+        i+=1; //пропуск /
+        string newCoord = "";
+        while (i<coord.length() && coord[i]!='/') { //считываем имя ребенка, которого будем искать от головного
+            name+=coord[i];
+            i++;
+        }
+        if (i<coord.length()) { //если есть еще вложенные объекты
+            for (;i<coord.length();i++) {
+                newCoord+=coord[i];
+            }
+        }
+        else { //если нет вложенных
+            newCoord='.'; //установка теукщего элемента как координаты поиска
+        }
+        base *found = p->findObject(name);
+        if (found==nullptr) { //если не нашел у родительского
+            return nullptr;
+        }
+        else {
+            return p->findObject(name)->findObjectByCoord(newCoord); //вызов от ребенка метода поиска по координатам
+        }
+    }
+    else if(coord.length() == 0) {
+        return nullptr;
+    }
+    else { //относительная координата от текущего объекта
+        string newCoord="";
+        /*if (coord[i] == '.' && coord[i+1]=='/') { //если начинается с точки и есть еще что то
+            i+=1; //пропуск .
+            for (;i<coord.length();i++) {
+                newCoord+=coord;
+            }
+            return p->findObjectByCoord(newCoord);
+        }*/
+        while (i<coord.length() && coord[i]!='/') { //считываем имя первого объекта
+            name+=coord[i];
+            i++;
+        }
+        base *child = findObject(name); //ищем ребенка по имени
+        if (child == nullptr) //если ребенок не найден
+            return nullptr;
+        if (i<coord.length()) {
+            i++; //пропуск /
+            for (;i<coord.length();i++) { //считываем координаты оставшихся объектов
+                newCoord+=coord[i];
+            }
+        }
+        else { //если это последний объект в координатах, возвращаем его
+            newCoord='.';
+        }
+        return child->findObjectByCoord(newCoord); //ищем по координатам относительно текущего ребенка
+    }
+}
+
+void base::setConnection(structSignal newStructSignal, base *newObjConnection, structHandler newStructHandler) {
+    for (int i = 0; i<connections.size();i++) {
+        if (connections[i].signalConnection == newStructSignal && connections[i].objConnection == newObjConnection && connections[i].handlerConnection == newStructHandler) {
+            return;
+        }
+        connections.push_back(connect{newStructSignal, newObjConnection, newStructHandler});
+    }
+}
+void base::deleteConnection(structSignal newStructSignal, base *newObjConnection, structHandler newStructHandler){
+    for(int i = 0; i < connections.size(); i++){
+        if(connections[i].signalConnection == newStructSignal && connections[i].objConnection == newObjConnection && connections[i].handlerConnection == newStructHandler)
+        {
+            connections.erase(connections.begin() + i);
+            return;
+        }
+    }
+}
+void base::emitSignal(structSignal emitter, string command){
+    if(!readyToConnect)
+        return;
+    (this->*emitter)(command);
+    for (int i = 0; i < connections.size(); i++)
+        if(connections[i].signalConnection == emitter && connections[i].objConnection->readyToConnect)
+            (connections[i].objConnection->*connections[i].handlerConnection)(command);
+}
+void base::setCondition(int newCondition) {
+    this->readyToConnect = newCondition;
+}
+/*
+base::handler(string signStr);
+base::signal(string *signStr);*/

@@ -9,6 +9,11 @@
 #include <vector>
 #include <iostream>
 using namespace std;
+class base;
+using structSignal = void(base::*)(string&);
+using structHandler = void(base::*)(string);
+#define SIGNAL(signal_f) ((structSignal)(&signal_f)) //определяет идентификатор и последовательность символов, которой будет замещаться данный идентификатор при его обнаружении
+#define HANDLER(handler_f) ((structHandler)(&handler_f))
 
 class base {
 public:
@@ -18,6 +23,14 @@ public:
     bool printed; //индикатор того, что элемент был выведен
     int state; //состояние
     int classNum; //номер класса, с помощью которого создан
+    struct connect {
+        structSignal signalConnection;
+        base* objConnection;
+        structHandler handlerConnection;
+    };
+    vector<connect> connections;
+    bool readyToConnect = 1;
+
     base(base *head = nullptr, string name = "", int state = 0,
          int newClassNum = 0) {
         setName(name);
@@ -37,7 +50,21 @@ public:
     void setClass(int num);
     int getClass();
     void clearPrinted();
-};
+    base* findObjectByCoord(string coord);
+    base* getRoot(base *obj);
+    void handler(string signStr) {
+        cout << "\nSignal to " << getName() <<" Text: " << signStr << endl;
+    }
+    void signal(string *signStr) {
+        *signStr += " (class: " + to_string(getClass()) + ")";
+        cout << "\nSignal from " << getName() << endl;
+    }
+    void setConnection(structSignal newStructSignal, base* newObjConnection, structHandler newStructHandler);
+    void deleteConnection(structSignal newStructSignal, base* newObjConnection, structHandler newStructHandler);
+    void emitSignal(structSignal emitter, string command);
+    base* getHead(base *head);
+    void setCondition(int newCondition);
 
+};
 #include "base.cpp"
 #endif //SIAOD_BASE_H
