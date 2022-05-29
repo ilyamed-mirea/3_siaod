@@ -35,6 +35,9 @@ void bonus::build_tree_b() {
         i++; // пропуск пробела
         classNum = int(line[i]-'0'); //считывание номера класса
         switch(classNum) {
+            case 1:
+                obj = new base(foundParent, name);
+                break;
             case 2:
                 obj = new cl_2(foundParent, name); //objectsB[k]
                 break;
@@ -51,6 +54,8 @@ void bonus::build_tree_b() {
                 obj = new cl_6(foundParent, name);
                 break;
             default:
+                //obj = new base(foundParent, name);
+                cout << "error classNum" << endl;
                 break;
         }
         objectsB.push_back(obj); //добавляем новый объект в иерархию
@@ -138,53 +143,66 @@ void bonus::getCommands_b() {
 string bonus::isHeadNotFound_b() {
     return headNotFound;
 }
-
-
 void bonus::configureConnections_b() {
     string from,to,command,coord,msg;
     int newCondition;
     base* objFrom;
     base* objTo;
-    cin >> coord;
-    while (coord!="end_of_connections") {
-        cin >> from >> to;
+    cin >> from;
+    while (from != "end_of_connections") {
+        cin >> to;
         objFrom = findObjectByCoord_b(from, objectsB[0]);
         objTo = findObjectByCoord_b(to, objectsB[0]);
-        objFrom->setConnection(recognitionSignal(), objTo, recognitionHandler());
+        if (objFrom == nullptr) { //если не найден объект по координате
+            cout << endl << "Object " << from << " not found";
+        }
+        if (objTo == nullptr) { //если не найден целевой объект
+            cout << endl << "Handler object " << to << " not found";
+        }
+        if (objFrom == nullptr || objTo == nullptr) //если не найден какой-то объект, не выполнять операцию
+            continue;
+        else {
+            objFrom->setConnection(SIGNAL_DEF(base, pointerSignal), objTo, HANDLER_DEF(base, pointerHandler));
+        }
+        cin >> from;
+    }
+    for (int i = 0; i < objectsB.size(); i++) {
+        objectsB[i]->setState(1); //привести все объекты в состояние готовности
     }
     cin >> command;
-    while (command!="END") {
-        if (command == "EMIT") {
-            cin >> from >> msg;
-            objFrom = findObjectByCoord_b(from, objectsB[0]);
-            for (int i =0;i<objFrom->connections.size();i++) {
-                objFrom->emitSignal(objFrom->connections[i].signalConnection, msg); //command
+    while (command != "END") {
+        cin >> from;
+        objFrom = findObjectByCoord_b(from, objectsB[0]);
+        if (objFrom == nullptr) { //если не найден объект по координате
+            if (command=="SET_CONNECT" || command=="DELETE_CONNECT") {
+                cin >> to;
             }
+            else if (command == "EMIT")  {
+                getline(cin, msg);
+            }
+            else if (command == "SET_CONDITION") {
+                cin >> newCondition;
+            }
+            cout << endl << "Object " << from << " not found";
         }
-        else if (command == "SET_CONNECT") {
-            cin >> from >> to;
-            objFrom = findObjectByCoord_b(from, objectsB[0]);
+        else if (command=="SET_CONNECT" || command=="DELETE_CONNECT") {
+            cin >> to;
             objTo = findObjectByCoord_b(to, objectsB[0]);
-            [](base* objFrom,base* objTo){objFrom->setConnection(SIGNAL_D(base::signal), objTo, HANDLER_D(base::handler)); }(objFrom, objTo);
-            /*[](vector <base*> objectsB){ //лямбда-функция (анонимная функция), в [] можно отлавливать переменную (либо по значению без возможности редактирования, либо по ссылке с возможностью редактирования)
-                (*(objectsB[1])).setConnection(recognitionSignal(), objectsB[2], recognitionHandler());
-                //(*(objectsB[(objectsB).size() - 1])).setConnection(recognitionSignal(), objectsB[(objectsB).size() - 3], recognitionHandler());
-                //(*(objectsB[(objectsB).size() - 1])).setConnection(recognitionSignal(), objectsB[(objectsB).size() - 4], recognitionHandler());
-                (*(objectsB[1])).emitSignal(recognitionSignal(), "let's celebrate and...");
-                (*(objectsB[1])).deleteConnection(recognitionSignal(), objectsB[2], recognitionHandler());
-                //(*(objectsB[(objectsB).size() - 1])).emitSignal(recognitionSignal(), "let's celebrate and..."); //тревога и печаль... мне кажется сейчас...
-            }(objectsB);*/
+            if (objTo == nullptr) { //если не найден целевой объект
+                cout << endl << "Handler object " << to << " not found";
+            }
+            else if (command=="SET_CONNECT")
+                objFrom->setConnection(SIGNAL_DEF(base, pointerSignal), objTo, HANDLER_DEF(base, pointerHandler));
+            else
+                objFrom->deleteConnection(SIGNAL_DEF(base, pointerSignal), objTo, HANDLER_DEF(base, pointerHandler));
         }
-        else if (command == "DELETE_CONNECT") {
-            cin >> from >> to;
-            objFrom = findObjectByCoord_b(from, objectsB[0]);
-            objTo = findObjectByCoord_b(to, objectsB[0]);
-            objFrom->deleteConnection(SIGNAL_D(base::signal), objTo, HANDLER_D(base::handler));
+        else if (command == "EMIT")  {
+            getline(cin, msg);
+            objFrom->emit(SIGNAL_DEF(base, pointerSignal), msg);
         }
         else if (command == "SET_CONDITION") {
-            cin >> from >> newCondition;
-            objFrom = findObjectByCoord_b(from, objectsB[0]);
-            objFrom->setCondition(newCondition);
+            cin >> newCondition;
+            objFrom->setState(newCondition);
         }
         cin >> command;
     }

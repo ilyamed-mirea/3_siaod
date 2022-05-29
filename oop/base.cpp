@@ -45,9 +45,6 @@ void base::printTreeReady(int otstupColv) { //вывод дерева готов
 void base::setHead(base *head) {
     father=head;
 }
-base* base::getHead(base *head) {
-    return father;
-}
 void base::changeHead(base *head) { //смена головного объекта (например перенос к другому родительскому)
     for (int i=0;i<father->pointers.size();i++) {
         if ((father->pointers[i])->getName() == getName()) {
@@ -180,35 +177,49 @@ base* base::findObjectByCoord(string coord) {
     }
 }
 
-void base::setConnection(structSignal newStructSignal, base *newObjConnection, structHandler newStructHandler) {
-    for (int i = 0; i<connections.size();i++) {
-        if (connections[i].signalConnection == newStructSignal && connections[i].objConnection == newObjConnection && connections[i].handlerConnection == newStructHandler) {
+string base::getObjectCoord() {
+    string objCoord = "";
+    base* obj = this;
+    if (obj->father == nullptr) return "/";
+    while (obj->father != nullptr) {
+        objCoord = "/" + obj->getName() + objCoord;
+        obj = obj->father;
+    }
+    return objCoord;
+}
+void base::setConnection(void (base::*pointerSignal)(string&), base* objHandler, void(base::*pointerHandler)(base*, string&)) {
+    for (int i = 0; i < connections.size(); i++) {
+        if (connections[i].pointerSignal == pointerSignal && connections[i].objConnection == objHandler && connections[i].pointerHandler == pointerHandler) {
             return;
         }
-        connections.push_back(connect{newStructSignal, newObjConnection, newStructHandler});
     }
+    connections.push_back(connect{pointerSignal,objHandler,pointerHandler});
 }
-void base::deleteConnection(structSignal newStructSignal, base *newObjConnection, structHandler newStructHandler){
-    for(int i = 0; i < connections.size(); i++){
-        if(connections[i].signalConnection == newStructSignal && connections[i].objConnection == newObjConnection && connections[i].handlerConnection == newStructHandler)
-        {
+
+void base::deleteConnection(void (base::*pointerSignal)(string&), base* objHandler, void(base::*pointerHandler)(base*, string&)) {
+    for (int i = 0; i < connections.size(); i++) {
+        if (connections[i].pointerSignal == pointerSignal && connections[i].objConnection == objHandler && connections[i].pointerHandler == pointerHandler) {
             connections.erase(connections.begin() + i);
-            //return;
+            return;
         }
     }
 }
-void base::emitSignal(structSignal emitter, string command){
-    if(!readyToConnect)
+void base::pointerSignal(string& text) {
+    cout << endl << "Signal from " << getObjectCoord();
+}
+void base::pointerHandler(base* obj, string& text) {
+    if (getState())
+        cout << endl << "Signal to " << getObjectCoord() << " Text: " + text + " (class: " + to_string(obj->getClass()) + ")";
+}
+void base::emit(void(base::*pointerSignal)(string&), string& command) {
+    if (!getState())
         return;
-    (this->*emitter)(command);
-    for (int i = 0; i < connections.size(); i++)
-        if(connections[i].signalConnection == emitter && connections[i].objConnection->readyToConnect==1)
-            ((connections[i].objConnection)->*connections[i].handlerConnection)(command); //this,command
+    (this->*pointerSignal)(command);
+    for (int i = 0; i < connections.size(); i++) {
+        if (connections[i].pointerSignal == pointerSignal) {
+            void (base::*pointerHandler)(base*, string&);
+            pointerHandler = connections[i].pointerHandler;
+            (connections[i].objConnection->*pointerHandler)(this,command);
+        }
+    }
 }
-void base::setCondition(int newCondition) {
-    this->readyToConnect = newCondition;
-}
-
-/*
-base::handler(string signStr);
-base::signal(string *signStr);*/

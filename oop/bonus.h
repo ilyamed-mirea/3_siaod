@@ -22,5 +22,6 @@ public:
     string isHeadNotFound_b();
     void configureConnections_b();
 };
+
 #include "bonus.cpp"
 #endif

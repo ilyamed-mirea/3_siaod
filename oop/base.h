@@ -10,20 +10,9 @@
 #include <iostream>
 using namespace std;
 class base;
-//using structSignal = void(base::*)(string&);
-//using structHandler = void(base::*)(string);
-typedef void(base::*structSignal)(base*, string&);
-typedef void(base::*structHandler)(string);
-//параметризованные макроопределения предпроцессора:
-#define SIGNAL_D(S, signal_f) ((structSignal)(&S::signal_f)) //
-#define HANDLER_D(H, handler_f) ((structHandler)(&H::handler_f)) //
-//#define SIGNAL_D(signal_f) ((structSignal)(signal_f)) //
-//#define HANDLER_D(handler_f) ((structHandler)(handler_f)) //
-/*
-// structSignal = (void(S::*) (string&))
-#define SIGNAL_D(S, signal_f) ( (void(S::*) (string&)) (&S::signal_f)) //дляполучения указателя на метод сигнала
-#define HANDLER_D(H, hendler_f) ((void(H::*) (base*, string&))(&H::hendler_f)) //для получения указателя на метод обработчика
-*/
+#define SIGNAL_DEF(S, signalFunc) ((void(S::*) (string&))(&S::signalFunc)) //получение указателя на метод сигнала
+#define HANDLER_DEF(H, handlerFunc) ((void(H::*) (base*, string&))(&H::handlerFunc)) // получение уакзателя на метод обработчика
+
 class base {
 public:
     string name; //имя объекта
@@ -33,15 +22,13 @@ public:
     int state; //состояние
     int classNum; //номер класса, с помощью которого создан
     struct connect {
-        structSignal signalConnection;
+        void (base::*pointerSignal)(string&);
         base* objConnection;
-        structHandler handlerConnection;
+        void (base::*pointerHandler)(base* pointerObj, string&);
     };
     vector<connect> connections;
-    bool readyToConnect = 1;
 
-    base(base *head = nullptr, string name = "", int state = 0,
-         int newClassNum = 0) {
+    base(base *head = nullptr, string name = "", int state = 0, int newClassNum = 1) {
         setName(name);
         setHead(head);
         setState(state);
@@ -61,24 +48,12 @@ public:
     void clearPrinted();
     base* findObjectByCoord(string coord);
     base* getRoot(base *obj);
-    void handler(string signStr) {
-        cout << endl << "Signal to " << getName() <<" Text: " << signStr << endl;
-    }
-    void signal(string *signStr) {
-        *signStr += " (class: " + to_string(getClass()) + ")";
-        cout << "\nSignal from " << getName() << endl;
-    }
-    void setConnection(structSignal newStructSignal, base* newObjConnection, structHandler newStructHandler);
-    void deleteConnection(structSignal newStructSignal, base* newObjConnection, structHandler newStructHandler);
-    void emitSignal(structSignal emitter, string command);
-    base* getHead(base *head);
-    void setCondition(int newCondition);
-    structSignal recognitionSignal(){
-        return SIGNAL_D(base::signal);
-    }
-    structHandler recognitionHandler(){
-        return HANDLER_D(base::handler);
-    }
+    string getObjectCoord();
+    void setConnection(void (base::*pointerSignal)(string&), base* objHandler, void(base::*pointerHandler)(base*, string&));
+    void deleteConnection(void (base::*pointerSignal)(string&), base* objHandler, void(base::*pointerHandler)(base*, string&));
+    void emit(void(base::*pointerSignal)(string&), string& command);
+    void pointerSignal(string& text);
+    void pointerHandler(base* obj, string& text);
 };
 
 #include "base.cpp"
