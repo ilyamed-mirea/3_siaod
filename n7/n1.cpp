@@ -1,68 +1,113 @@
-//
-// Created by Илья on 17.05.2022.
-//
-
-#include <ctime>
+#include <string>
 #include <iostream>
+#include <ctype.h>
+
 using namespace std;
 
-int *getRandomArr(int size) {
-    int *arr = new int[size];
-    srand(time(NULL));
+#define MAX 100
 
-    for (int i = 0; i < size; i++)
-        arr[i] = rand() % 100;
+struct list {
+    int data[MAX];
+    int top;
+};
 
-    return arr;
-}
+int precedence(char); //приоритетность
+void init(list *); //установка top=-1
+int empty(list *);
 
-int *getArr(int size) {
-    int *arr = new int[size];
+int full(list *);
 
-    for (int i = 0; i < size; i++)
-        cin >> arr[i];
+int pop(list *);
 
-    return arr;
-}
-void simpleChoiceSort(int *arr, int size) {
-    int init = -100;
-    for (int i = 0; i < size-1; i++) {
-        int *max = &init;
-        for (int j = i; j < size; j++)
-            if (arr[j] > (*max)) {
-                max = &arr[j];
-            }
-        swap(arr[i],*max);
-    }
-}
-/*
-void simpleChoiceSort(int *arr, int size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = i; j>0 && arr[j-1]>arr[j]; j--)
-            swap(arr[j-1],arr[j]);
-    }
-}
-*/
-void printArr(int *arr, int size) {
-    for (int i=0;i<size;i++)
-        cout << *arr++ << " ";
-    cout << endl;
-}
+void push(list *, int);
+
+int top(list *);   //значение головного элемента
+string infix_to_postfix(string infix);
 
 int main() {
-    system("chcp 65001");
-    cout << "сортировка методом простого выбора" << endl;
-    int size = 0;
-    cout << "Введите размер: ";
-    cin >> size;
-
-    int *arr = getRandomArr(size);
-    printArr(arr,size);
-
-    simpleChoiceSort(arr,size);
-
-    cout << "Output: " << endl;
-    printArr(arr,size);
-    delete[] arr;
+    string infix, postfix;
+    cout << "Enter an infix expression(eg: 5+2*4): ";
+    cin >> infix;
+    postfix = infix_to_postfix(infix);
+    cout << endl << "Postfix expression: ";
+    cout << postfix;
     return 0;
+}
+
+string infix_to_postfix(string infix) {
+    list s{};
+    string postfix;
+    char x, token;
+    init(&s); //инициализация списка
+
+    for (int i = 0; i < infix.length(); i++) {
+        token = infix[i];
+        if (isalnum(token))
+            postfix += token;
+        else if (token == '(')
+            push(&s, '(');
+        else if (token == ')')
+            while ((x = pop(&s)) != '(')
+                postfix += x;
+        else {
+            while (precedence(token) <= precedence(top(&s)) && !empty(&s)) {
+                x = pop(&s);
+                postfix += x;
+            }
+            push(&s, token);
+        }
+    }
+
+
+    while (!empty(&s)) {
+        x = pop(&s);
+        //cout << x << endl;
+        postfix += x;
+    }
+    return postfix;
+}
+
+int precedence(char x) {
+    if (x == '(')
+        return (0);
+    if (x == '+' || x == '-')
+        return (1);
+    if (x == '*' || x == '/' || x == '%')
+        return (2);
+
+    return (3);
+}
+
+void init(list *s) {
+    s->top = -1;
+}
+
+int empty(list *s) {
+    if (s->top == -1)
+        return (1);
+
+    return (0);
+}
+
+int full(list *s) {
+    if (s->top == MAX - 1)
+        return (1);
+
+    return (0);
+}
+
+void push(list *s, int x) {
+    s->top = s->top + 1;
+    s->data[s->top] = x;
+}
+
+int pop(list *s) {
+    int x;
+    x = s->data[s->top];
+    s->top = s->top - 1;
+    return x;
+}
+
+int top(list *p) {
+    return (p->data[p->top]);
 }
