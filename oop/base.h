@@ -15,12 +15,12 @@ class base;
 
 class base {
 public:
-    string name; //имя объекта
-    base *father; //указатель на родителя
-    vector<base*> pointers; //дети
+    int cardNum;
+    int pin;
+    int balance;
+
     bool printed; //индикатор того, что элемент был выведен
     int state; //состояние
-    int classNum; //номер класса, с помощью которого создан
     struct connect {
         void (base::*pointerSignal)(string&);
         base* objConnection;

@@ -1,5 +1,6 @@
 #ifndef System_h
 #define application_h
+/*
 #include "base.h"
 #include "bonus.h"
 
@@ -22,5 +23,5 @@ public:
         return 0;
     };
 };
-
+*/
 #endif 

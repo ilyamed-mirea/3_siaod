@@ -3,4 +3,6 @@ project(siaod)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(siaod oop/main.cpp oop/Reader.h oop/Setter.h oop/Ident.h)
+add_executable(siaod n7/n1.cpp)
+
+# oop/main.cpp

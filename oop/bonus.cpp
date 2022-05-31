@@ -1,7 +1,6 @@
-#include "bonus.h"
 #include "classes.h"
 #include "base.h"
-void bonus::build_tree_b() {
+void Commander::build_tree_b() {
     int index = 1; // кол-во объектов в objectsB, 1 так как корневой элемент вводится вне цикла
     int i = 0; // просто итератор
     string line, coord; //line - полученная строка, coord - координата/путь
@@ -70,7 +69,7 @@ void bonus::build_tree_b() {
     }*/
 }
 
-void bonus::printTree_b() {
+void Commander::printTree_b() {
     cout << "Object tree" << endl;
     objectsB[0]->printTree(); //вывод дерева(рекурсивный)
     objectsB[0]->clearPrinted(); //поставить у всех элементов printed=false
@@ -79,29 +78,29 @@ void bonus::printTree_b() {
     }
 }
 
-void bonus::printTreeReady_b() {
+void Commander::printTreeReady_b() {
     cout << endl << "The tree of objects and their readiness" << endl;
     objectsB[0]->printTreeReady(); //вывод дерева с состояниями(рекурсивный)
     objectsB[0]->clearPrinted();
 }
 
-base* bonus::findObject_b(string name) {
+base* Commander::findObject_b(string name) {
     return objectsB[0]->findObject(name); //найти объект, начало от корневого
 }
 
-base* bonus::findObjectByCoord_b(string coord, base* cur) {
+base* Commander::findObjectByCoord_b(string coord, base* cur) {
     return cur->findObjectByCoord(coord); //найти объект по координатам относительно cur
 }
 
-base* bonus::getCurrentElement_b() {
+base* Commander::getCurrentElement_b() {
     return currentEl;
 }
 
-void bonus::setCurrentElement_b(base *cur) {
+void Commander::setCurrentElement_b(base *cur) {
     this->currentEl = cur;
 }
 
-void bonus::getCommands_b() {
+void Commander::getCommands_b() {
     string command,coord,line;
     while (true) {
         command = "";
@@ -140,10 +139,10 @@ void bonus::getCommands_b() {
         }
     }
 }
-string bonus::isHeadNotFound_b() {
+string Commander::isHeadNotFound_b() {
     return headNotFound;
 }
-void bonus::configureConnections_b() {
+void Commander::configureConnections_b() {
     string from,to,command,coord,msg;
     int newCondition;
     base* objFrom;

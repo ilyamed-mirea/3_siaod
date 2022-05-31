@@ -1,7 +1,6 @@
 #include <string>
 #include <iostream>
 #include <ctype.h>
-
 using namespace std;
 
 #define MAX 100
@@ -13,16 +12,12 @@ struct list {
 
 int precedence(char); //приоритетность
 void init(list *); //установка top=-1
-int empty(list *);
-
-int full(list *);
-
-int pop(list *);
-
-void push(list *, int);
-
-int top(list *);   //значение головного элемента
-string infix_to_postfix(string infix);
+int empty(list *); //проверка на пустоту
+int full(list *); //проверка на полноту
+int pop(list *); //удаление элемента
+void push(list *, int); //добавление элемента
+int top(list *); //значение головного элемента
+string infix_to_postfix(string infix); //функция перевода из инф в постф
 
 int main() {
     string infix, postfix;
@@ -31,6 +26,7 @@ int main() {
     postfix = infix_to_postfix(infix);
     cout << endl << "Postfix expression: ";
     cout << postfix;
+    system("pause");
     return 0;
 }
 
@@ -42,7 +38,7 @@ string infix_to_postfix(string infix) {
 
     for (int i = 0; i < infix.length(); i++) {
         token = infix[i];
-        if (isalnum(token))
+        if (isalnum(token)) //если буква или число
             postfix += token;
         else if (token == '(')
             push(&s, '(');
@@ -50,7 +46,7 @@ string infix_to_postfix(string infix) {
             while ((x = pop(&s)) != '(')
                 postfix += x;
         else {
-            while (precedence(token) <= precedence(top(&s)) && !empty(&s)) {
+            while (precedence(token) <= precedence(top(&s)) && !empty(&s)) { //сравнение приоритетность текущего элемента и головного
                 x = pop(&s);
                 postfix += x;
             }
@@ -58,8 +54,7 @@ string infix_to_postfix(string infix) {
         }
     }
 
-
-    while (!empty(&s)) {
+    while (!empty(&s)) { //если в стеке что то осталось
         x = pop(&s);
         //cout << x << endl;
         postfix += x;
