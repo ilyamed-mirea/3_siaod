@@ -54,12 +54,8 @@ void base::changeHead(base *head) { //смена головного объект
     setHead(head);//устанавливаем родителя новый элемент
     father->pointers.push_back(this);//добавляем объект в список детей..родителя
 }
-base* base::findObject(string name, vector<base*> objectsB, base* parent) { //найти объект
-    for (int i = 0; i < objectsB.size(); i++) {
-        if (objectsB[i]->getName() == name && objectsB[i]->father == parent)
-            return objectsB[i];
-    }
-    /*if (getName() == name && father == parent) // если искомый объекь - текущий = вернуть его
+base* base::findObject(string name) { //найти объект
+    if (getName() == name) // если искомый объекь - текущий = вернуть его
         return this;
     else if (pointers.size()>0) { //если есть дети - идем по ним
         for (int i=0; i<pointers.size();i++) {
@@ -67,7 +63,7 @@ base* base::findObject(string name, vector<base*> objectsB, base* parent) { //н
             if (found!=nullptr) //если ребенок нашел искомый, возвращаем его
                 return found;
         }
-    }*/
+    }
     return nullptr; //ничего не нашлось
 };
 int base::getState() {
@@ -109,7 +105,7 @@ base* base::getRoot(base *obj) {
     }
     return p; //возврат корневого элемента
 }
-base* base::findObjectByCoord(string coord, vector<base*> objectsB) {
+base* base::findObjectByCoord(string coord) {
     int i = 0;
     string name = "";
     base *p = getRoot(this); //корневой объект
@@ -121,7 +117,7 @@ base* base::findObjectByCoord(string coord, vector<base*> objectsB) {
         for (;i<coord.length();i++) {
             name+=coord[i]; // считываем имя объекта, который нужно найти
         }
-        return p->findObjectByCoord(name, objectsB); //находим и возвращаем
+        return p->findObjectByCoord(name); //находим и возвращаем
     }
     else if (coord==".") { //если текущий объект
         return this;
@@ -141,12 +137,12 @@ base* base::findObjectByCoord(string coord, vector<base*> objectsB) {
         else { //если нет вложенных
             newCoord='.'; //установка теукщего элемента как координаты поиска
         }
-        base *found = p->findObject(name, objectsB, this);
+        base *found = p->findObject(name);
         if (found==nullptr) { //если не нашел у родительского
             return nullptr;
         }
         else {
-            return p->findObject(name,objectsB,this)->findObjectByCoord(newCoord, objectsB); //вызов от ребенка метода поиска по координатам
+            return p->findObject(name)->findObjectByCoord(newCoord); //вызов от ребенка метода поиска по координатам
         }
     }
     else if(coord.length() == 0) {
@@ -165,7 +161,7 @@ base* base::findObjectByCoord(string coord, vector<base*> objectsB) {
             name+=coord[i];
             i++;
         }
-        base *child = findObject(name,objectsB, this); //ищем ребенка по имени
+        base *child = findObject(name); //ищем ребенка по имени
         if (child == nullptr) //если ребенок не найден
             return nullptr;
         if (i<coord.length()) {
@@ -177,7 +173,7 @@ base* base::findObjectByCoord(string coord, vector<base*> objectsB) {
         else { //если это последний объект в координатах, возвращаем его
             newCoord='.';
         }
-        return child->findObjectByCoord(newCoord, objectsB); //ищем по координатам относительно текущего ребенка
+        return child->findObjectByCoord(newCoord); //ищем по координатам относительно текущего ребенка
     }
 }
 
@@ -209,21 +205,18 @@ void base::deleteConnection(void (base::*pointerSignal)(string&), base* objHandl
     }
 }
 void base::pointerSignal(string& text) {
-    cout << endl << "Signal send by " << this->getName();
+    cout << endl << "Signal from " << getObjectCoord();
 }
 void base::pointerHandler(base* obj, string& text) {
     if (getState())
-        cout << endl << "base handler " << endl; //this->getName() << " Text: " + text + " (class: " + to_string(this->getClass()) + ")";
+        cout << endl << "Signal to " << getObjectCoord() << " Text: " + text + " (class: " + to_string(obj->getClass()) + ")";
 }
-//void base::emit(void(base::*pointerSignal)(string&), string& command) {
-void base::emit(void(base::*pointerSignal)(string&), base *obj, string& command) {
+void base::emit(void(base::*pointerSignal)(string&), string& command) {
     if (!getState())
         return;
-    //(this->*pointerSignal)(command); вызов метода у отправщика
+    (this->*pointerSignal)(command);
     for (int i = 0; i < connections.size(); i++) {
-        //if (connections[i].pointerSignal == pointerSignal) {
-        if (obj == connections[i].objConnection) {
-            cout << this->getName() << connections[i].objConnection->getName();
+        if (connections[i].pointerSignal == pointerSignal) {
             void (base::*pointerHandler)(base*, string&);
             pointerHandler = connections[i].pointerHandler;
             (connections[i].objConnection->*pointerHandler)(this,command);
