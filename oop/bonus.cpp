@@ -1,20 +1,22 @@
 #include "bonus.h"
 #include "Commander.h"
 #include "Printer.h"
-#include "cl_4.h"
-#include "cl_5.h"
-#include "cl_6.h"
+#include "Identification.h"
+#include "CashIn.h"
+#include "CashOut.h"
+
 void bonus::build_tree_b() {
     int index = 1; // кол-во объектов в objectsB, 1 так как корневой элемент вводится вне цикла
     int i = 0; // просто итератор
-    base *root = this;//new base(nullptr, "base"); //создание корневого объекта
+    base *root = new base(nullptr, "base");//создание корневого объекта
+    root->bonusEl = this;
     setCurrentElement_b(root); //установка корневого объекта текущим (по умолчанию должно быть)
     objectsB.push_back(root); //корневой элемент = нулевой
     base *obj = nullptr;
-    for (classNum = 1; classNum <= 6; classNum++) {
+    for (classNum = 2; classNum <= 6; classNum++) {
         switch(classNum) {
-            case 1:
-                obj = new base(root, name);
+            case 1: //
+                obj = this;//new base(root, name);
                 break;
             case 2:
                 obj = new Commander(root, "Commander");
@@ -23,19 +25,18 @@ void bonus::build_tree_b() {
                 obj = new Printer(root, "Printer");
                 break;
             case 4:
-                obj = new cl_4(root, name);
+                obj = new Identification(root, "Identification");
                 break;
             case 5:
-                obj = new cl_5(root, name);
+                obj = new CashIn(root, "CashIn");
                 break;
             case 6:
-                obj = new cl_6(root, name);
+                obj = new CashOut(root, "CashOut");
                 break;
         }
         objectsB.push_back(obj); //добавляем новый объект в иерархию
         objectsB[index]->changeHead(root); //установка головного элемента созданного объекта
         index++;
-
     }
 }
 
@@ -112,22 +113,40 @@ void bonus::getCommands_b() {
 string bonus::isHeadNotFound_b() {
     return headNotFound;
 }
+void bonus::pointerHandler(base* obj, string& text) {
+    cout << endl << "bonusback " << text << obj->getName() << endl;
+}
+void bonus::pointerSignal(base* obj, string& text) {
+    cout << endl << "siganlbonusback " << text << obj->getName() << endl;
+}
 void bonus::configureConnections_b() {
     for (int i = 0; i < objectsB.size(); i++) {
         objectsB[i]->setState(1); //привести все объекты в состояние готовности
     }
     string from,to,command,msg;
-    int newCondition;
-    base* objFrom = findObjectByCoord_b("/", objectsB[0]);
+    base* root = objectsB[0];
     for (int i = 1; i < objectsB.size();i++) {
-        base* objTo = findObjectByCoord_b("//"+objectsB[i]->getName(), objectsB[0]);
-        objFrom->setConnection(SIGNAL_DEF(base, pointerSignal), objTo, HANDLER_DEF(base, pointerHandler));
+        base* objTo = findObjectByCoord_b("//"+objectsB[i]->getName(), root);
+        root->setConnection(SIGNAL_DEF(base, pointerSignal), root, objTo, HANDLER_DEF(base, pointerHandler));
     }
-    objFrom->emit(SIGNAL_DEF(base, pointerSignal),findObjectByCoord_b("//Commander", objectsB[0]), msg = "LOAD_CARDS"); //загрузка карт
-    objFrom->emit(SIGNAL_DEF(base, pointerSignal),findObjectByCoord_b("//Printer", objectsB[0]), msg);
+    //root->setConnection(SIGNAL_DEF(base, pointerSignal), findObjectByCoord_b("//Commander", root), findObjectByCoord_b("//Identification", root), HANDLER_DEF(base, pointerHandler));
+
+    //findObjectByCoord_b("//Commander", objectsB[0])->setConnection(SIGNAL_DEF(base, pointerSignal), objFrom, HANDLER_DEF(base, pointerHandler));
+    root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord_b("//Commander", root), msg = "INIT_CARD"); //загрузка карт
+    root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord_b("//Commander", root), msg = "INIT_MONEY"); //загрузка денег
+    root->curStatus = "ready"; //установка банкомата в состояние готовности!!
+
+    /*while(root->state==1) { //пока банкомат работает
+        root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord_b("//Commander", root), msg = "NEW_CLIENT");
+    }*/
+
+
+
+    //objFrom->emit(SIGNAL_DEF(base, pointerSignal),findObjectByCoord_b("//Printer", objectsB[0]), msg = "READY"); //вывод сообщения об удачной загрузке карт
 
     //objFrom->emit(SIGNAL_DEF(base, pointerSignal), msg);
     /*
+    int newCondition;
     cin >> from;
     while (from != "end_of_connections") {
         cin >> to;

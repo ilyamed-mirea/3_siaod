@@ -4,7 +4,7 @@ void base::setName(string name) {
     this->name = name;
 }
 string base::getName() {
-    return name;
+    return this->name;
 }
 void base::printTree(int otstupColv) { //вывод дерева
     if (!printed) { //если элемент еще не выводился
@@ -191,42 +191,176 @@ string base::getObjectCoord() {
     }
     return objCoord;
 }
-void base::setConnection(void (base::*pointerSignal)(string&), base* objHandler, void(base::*pointerHandler)(base*, string&)) {
+void base::setConnection(void (base::*pointerSignal)(string&), base* objFrom, base* objTo, void(base::*pointerHandler)(base*, string&)) {
+
     for (int i = 0; i < connections.size(); i++) {
-        if (connections[i].pointerSignal == pointerSignal && connections[i].objConnection == objHandler && connections[i].pointerHandler == pointerHandler) {
+        if (connections[i].pointerSignal == pointerSignal && connections[i].objTo == objTo && connections[i].objFrom == objFrom && connections[i].pointerHandler == pointerHandler) {
             return;
         }
     }
-    connections.push_back(connect{pointerSignal,objHandler,pointerHandler});
+    getRoot(this)->connections.push_back(connect{pointerSignal,objFrom,objTo,pointerHandler});
 }
 
-void base::deleteConnection(void (base::*pointerSignal)(string&), base* objHandler, void(base::*pointerHandler)(base*, string&)) {
+void base::deleteConnection(void (base::*pointerSignal)(string&), base* objFrom, base* objTo, void(base::*pointerHandler)(base*, string&)) {
     for (int i = 0; i < connections.size(); i++) {
-        if (connections[i].pointerSignal == pointerSignal && connections[i].objConnection == objHandler && connections[i].pointerHandler == pointerHandler) {
+        if (connections[i].pointerSignal == pointerSignal && connections[i].objTo == objTo && connections[i].objFrom == objFrom && connections[i].pointerHandler == pointerHandler) {
             connections.erase(connections.begin() + i);
             return;
         }
     }
 }
-void base::pointerSignal(string& text) {
-    cout << endl << "Signal send by " << this->getName();
+void base::pointerSignal(base* obj, string& text) { //obj = this
+    base *root = getRoot(this);
+    if (this->getName()=="Commander") {
+        if (text=="logout") { //завершение сессии
+            for (int i = 0; i < root->persons.size();i++) {
+                root->persons[i].status = 0; //выходим из аккаунта/отходит от банкомата
+            }
+            root->depositing = 0;
+            root->curStatus="ready"; //банкомат готов к работе
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//CashIn", root->pointers), text="return"); //отправляем комманду возврата денег
+
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Ready to work"); //и сообщает об этом
+        }
+        else if (text=="off") { //выключение
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Turn off the ATM"); //
+            root->setState(0);
+            root->depositing = 0;
+            root->curStatus="off";
+        }
+        else if (root->depositing == 1 && text.substr(0,3)!="ADD") { //левая комманда во время внесения
+            root->depositing = 0; //закончилось внесение средств
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//CashIn", root->pointers), text="return"); //отправляем комманду возврата денег
+        }
+        else if (text.substr(0,3)=="ADD") { //положить деньги
+            root->depositing = 1; //началось внесение средств
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//CashIn", root->pointers), text=text.substr(3)); //отправляем комманду ADD100 где 100 - сумма внесения в CashIn
+        }
+        else if (text.substr(0,2)=="ID") { //commander вызывает indentification для проверки карты
+            text=text.substr(2);
+            //cout << "xsxsxs" << obj->name;
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Identification", root->pointers), text); //проверка номера карты
+        }
+        else if (text.substr(0,3)=="PIN") { //commander вызывает indentification для проверки пин кода
+            text=text.substr(3);
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Identification", root->pointers), text); //проверка пинкода
+        }
+        else if (text.substr(0,8)=="WITHDRAW") { //снять деньги
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//CashOut", root->pointers), text=text.substr(8)); //отправляем сигнал обработки вывода в CashOut
+        }
+        else if (text=="End card loading") { //завезли денег или карт, инициализация банкомата завершена
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Ready to work");
+        }
+        else if (root->curStatus=="off") {//if (text!="End card loading" && text!="End money loading") { //загрузка в банкомат денег и карт
+            //cout << endl << " gg " << text << endl;
+            if (text.substr(0,4)=="Card") {
+                text=text.substr(text.find(" ")+1);  // пропуск Card
+                string cardNumN = text.substr(0,19);//(text.substr(0,4)+text.substr(5,4)+text.substr(10,4)+text.substr(15,4));
+                //cout << cardNumN << endl;
+                string pinN = text.substr(20,4);
+                int amountN = stoi(text.substr(25));
+                Person *pers;
+                pers = new Person(cardNumN,pinN,amountN);
+                root->persons.push_back(*pers);
+            }
+            else if (text.substr(0,5)=="Money") {
+                text = text.substr(text.find(" ")+1); // пропуск Money
+                //root->money.reserve(5);
+                //cout << text << endl;
+                /*while(text.find(" ")!=string::npos) {
+                    string curSum = text.substr(0,text.find(" "));
+                    int colv = stoi(curSum);
+                    root->money.push_back(colv);
+                    text = text.substr(text.find(" ")+1);
+                }*/
+                string buff;
+                for (int i = 0; i <= text.length(); i++) {
+                    if (text[i] == ' ' || i==text.length()) {
+                        root->money.push_back(stoi(buff));
+                        buff = "";
+                    }
+                    else
+                        buff += text[i];
+
+                }
+                //cout << (root->money[0])<<" "<<(root->money[1])<<" "<<(root->money[2])<<" "<<(root->money[3])<<" "<<(root->money[4]) << endl;
+
+            }
+        } else {//if (root->money.size()!=0 && root->persons.size()!=0){// && root->) { //если поступает левая команда не во время готовности
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Ready to work");
+            //root->pointerSignal(findObjectByCoord("//Commander", root->pointers),text = "logout");
+        }
+
+    }
+
+    else if (this->getName()=="Identification") {
+        if (text.substr(0,6)=="CARDok") { // получение данных о проверке номера карты
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Enter the PIN code"); //Вывод сообщения с просьбой ввести пин
+        }
+        else if (text.substr(0,5)=="PINok") { //|| text.substr(0,5)=="PINnotok" получение данных о проверке пин кода
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Select the command"); //Вывод сообщения о готовности принимать комманды
+        }
+        else { //проверка не успешна, карта/пин не подошли
+            //root->pointerSignal(root,text="logout");
+            //root->emit(SIGNAL_DEF(base, pointerSignal),this,root,text="Ready to work");
+        }
+    }
+
+    else if (this->getName()=="CashIn") {
+        if (text.substr(0,3)=="DEP") { //завершился внос средств
+            root->depositing = 0; //ввод завершен
+            int sum = stoi(text.substr(3)); //обрезаем DEP
+            for (int i = 0; i < root->persons.size(); i++) {
+                if (root->persons[i].status == 2) { //ищем человека, который сейчас у банкомата
+                    root->persons[i].amount+=sum;
+                    root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "Card balance "+to_string(root->persons[i].amount)); //отправка сигнала для вывода текущего баланса
+                    break;
+                }
+            }
+        }
+    }
+
+    else if (this->getName()=="CashOut") {
+        if (text=="poorMan") { //у человека недостаточно средств
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "There is not enough money on the card");
+        }
+        else if (text=="poorATM") { //у банкомата недостаточно средств
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "There is not enough money in the ATM");
+        }
+        else if (text=="not100") { //сумма не кратна 100
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text = "The amount is not a multiple of 100");
+        }
+        else { //все норм
+            root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), text); //отправка сигнала для вывода сколько денег сняли
+        }
+    }
+
 }
-void base::pointerHandler(base* obj, string& text) {
-    if (getState())
-        cout << endl << "base handler " << endl; //this->getName() << " Text: " + text + " (class: " + to_string(this->getClass()) + ")";
+void base::pointerHandler(base* obj, string& command) {
+    //if (getState())
+    cout << endl << obj->getName() << " handler \n" << command << endl; //this->getName() << " Text: " + text + " (class: " + to_string(this->getClass()) + ")";
 }
 //void base::emit(void(base::*pointerSignal)(string&), string& command) {
-void base::emit(void(base::*pointerSignal)(string&), base *obj, string& command) {
+void base::emit(void(base::*pointerSignal)(string&), base *objFrom, base *objTo, string& command) {
     if (!getState())
         return;
-    //(this->*pointerSignal)(command); вызов метода у отправщика
+    connections=getRoot(this)->connections; //все соединения хранятся в головном элементе
+    //(this->*pointerSignal)(command); //вызов метода у отправщика
     for (int i = 0; i < connections.size(); i++) {
         //if (connections[i].pointerSignal == pointerSignal) {
-        if (obj == connections[i].objConnection) {
-            cout << this->getName() << connections[i].objConnection->getName();
-            void (base::*pointerHandler)(base*, string&);
-            pointerHandler = connections[i].pointerHandler;
-            (connections[i].objConnection->*pointerHandler)(this,command);
+        if (objFrom == connections[i].objFrom && objTo == connections[i].objTo || objFrom == connections[i].objTo && objTo == connections[i].objFrom) {
+            //cout << endl << "emitted from " << objFrom->getName() << " to " << objTo->getName() << endl;
+            //cout << this->getName() << connections[i].objConnection->getName();
+            if (objFrom==connections[i].objFrom) { //если from-to
+                void (base::*pointerHandler)(base*, string&);
+                pointerHandler = connections[i].pointerHandler;
+                (objTo->*pointerHandler)(objFrom,command); //this,command вызов handler у принимающего
+            }
+            else { //возврат to-from
+                //void (base::*pointerHandler)(base*, string&);
+                //pointerHandler = connections[i].pointerHandler;
+                (objFrom->*pointerSignal)(command);
+            }
         }
     }
 }

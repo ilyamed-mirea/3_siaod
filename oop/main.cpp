@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "application.h"
+#include "System.h"
 
 int main() {
-    application go(nullptr);
-    go.build_tree_objects(); // построение дерева объектов
-    return go.exec_app(); // запуск системы
+    System app(nullptr);
+    app.build_tree_objects(); // построение дерева объектов
+    return app.exec_app(); // запуск системы
 }

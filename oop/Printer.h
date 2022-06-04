@@ -7,8 +7,11 @@ class Printer : public base {
 public:
     Printer(base *head = nullptr, string name = "", int state = 0,int num = 3) : base(head,name,state,num) {};
     void pointerHandler(base* obj, string& text) {
-        if (getState())
-            cout << endl << "Signal got3333 by " << this->getName() << " Text: " + text + " (class: " + to_string(this->getClass()) + ")";
+        if (getState()) {
+            cout << text;
+            if (text!="Turn off the ATM")
+                cout << endl;// << endl;//<< " "+getRoot(this)->curStatus << endl;
+        }
     }
 };
 

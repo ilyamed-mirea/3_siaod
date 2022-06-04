@@ -6,6 +6,7 @@ class bonus : public base {
 private:
     string fatherName;
     vector<base*> objectsB; // все объекты
+    vector<base*> persons; // все люди
     int classNum;
     base* currentEl; //текущий элемент
     string headNotFound = "ok"; //статус построения дерева удачно/неудачно
@@ -21,6 +22,8 @@ public:
     void getCommands_b();
     string isHeadNotFound_b();
     void configureConnections_b();
+    void pointerHandler(base* obj, string& text);
+    void pointerSignal(base* obj, string& text);
 };
 
 #endif
