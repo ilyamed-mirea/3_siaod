@@ -5,7 +5,7 @@
 
 class Identification : public base {
 public:
-    Identification(base *head = nullptr, string name = "", int state = 0,int num = 4) : base(head,name,state,num) {};
+    Identification(base *head = nullptr, string name = "", int state = 0) : base(head,name,state) {};
     void pointerHandler(base* obj, string& text) {
         if (getState()) {
             string res = "CARDnotok";

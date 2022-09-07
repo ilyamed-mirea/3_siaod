@@ -5,7 +5,7 @@
 
 class CashOut : public base {
 public:
-    CashOut(base *head = nullptr, string name = "", int state = 0,int num = 4) : base(head,name,state,num) {};
+    CashOut(base *head = nullptr, string name = "", int state = 0) : base(head,name,state) {};
     void pointerHandler(base* obj, string& text) {
         if (getState()) {
             base* root = getRoot(this);

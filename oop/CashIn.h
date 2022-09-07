@@ -7,7 +7,7 @@ class CashIn : public base {
     int currIncome = 0;
     //сколько денег вносится во время нескольких пополнений. буфер хранилища короче
 public:
-    CashIn(base *head = nullptr, string name = "", int state = 0,int num = 4) : base(head,name,state,num) {};
+    CashIn(base *head = nullptr, string name = "", int state = 0) : base(head,name,state) {};
     void pointerHandler(base* obj, string& text) {
         if (getState()) {
             base* root = getRoot(this);
@@ -24,7 +24,7 @@ public:
                     if (summ=="5000" || summ=="2000" || summ=="1000" || summ=="500" || summ=="100") {
                         currIncome += stoi(summ);
                         string got = "The amount: "+to_string(currIncome);
-                        root->emit(SIGNAL_DEF(base, pointerSignal),root,findObjectByCoord("//Printer", root->pointers), got); //Отправляем сигнал с количеством внесенных на данный момент денег
+                        root->emit(SIGNAL_DEF(base, pointerSignal),root,findObject("Printer", root->pointers, root), got); //Отправляем сигнал с количеством внесенных на данный момент денег
                     }
                 }
 
