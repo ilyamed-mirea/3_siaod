@@ -1,37 +1,68 @@
 #include <iostream>
 #include <string>
 using namespace std;
-const int length = 100;
 
-void getArr(int* arr, int length) {
-    cout << "������� �������� �������" << endl;
-    for (int i = 0; i < length; i++) {
-        int a;
-        while (true) {
-            cin >> a;
-            if (cin.fail() || cin.peek() != '\n') {
-                cin.clear();
-                cin.ignore(32777, '\n');
-                cout << "Input error! Repeat please..." << endl;
-            }
-            else
-                break;
-        }
-        arr[i] = a;
-    }
+void n1() {
+    unsigned int mask = 0x86; //134 в 10
+    unsigned int x = 0x1A1; //1 в 10
+    int res = x | mask; //135 в 10
+    cout << res << endl;
 }
 
-void printArr(int* arr, int length) {
-    for (int i = 0; i < length; i++) {
-        cout << arr[i] << endl;
-    }
+void n2() {
+    unsigned int mask = 0xFF;
+    unsigned int x;
+    cin >> x;
+    x = x & mask;
+    //x = x & ~((mask << 7) | (mask << 8) | (mask << 9));
+    cout << x << endl; //int
+    printf("%#010x", x); //16x sys
 }
 
-int main() {
+void n3() {
+    unsigned int x;
+    cin >> x;
+    x = x << 3; //*2^n
+    cout << x << endl; 
+}
+
+void n4() {
+    unsigned int x;
+    cin >> x;
+    x = x >> 3;
+    cout << x << endl;
+}
+
+void n5() {
+    unsigned int x, n;
+    cin >> x >> n;
+    const unsigned mask = 1;
+    x = x & ~(mask << n);
+    cout << x << endl; //int
+}
+
+int mainX() {
 
     system("chcp 65001");
-    cout << "тест?" << endl;
-    int a;
-    cin >> a;
+    
+    unsigned int n,x = 0x0;
+    cout << "n1" << endl;
+    n1();
+    cout << endl << "n2" << endl << "Введите  x" << endl;
+    //n2();
+
+    cout << endl << "n3" << endl << "Введите  x" << endl;
+    //n3();
+
+    cout << endl << "n4" << endl << "Введите  x" << endl;
+    //n4();
+
+    cout << endl << "n5" << endl << "Введите  x,n" << endl;
+    n5();
+
+    cout << endl << "Введите число для выхода" << endl;
+    cin >> x;
+    
     return 0;
 }
+

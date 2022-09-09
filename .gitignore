@@ -5,6 +5,7 @@
 *.o
 *.obj
 
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -64,6 +65,7 @@
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+.vs
 
 # JIRA plugin
 atlassian-ide-plugin.xml
