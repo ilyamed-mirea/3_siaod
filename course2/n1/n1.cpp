@@ -48,14 +48,15 @@ int mainX() {
     unsigned int n,x = 0x0;
     cout << "n1" << endl;
     n1();
+
     cout << endl << "n2" << endl << "Введите  x" << endl;
-    //n2();
+    n2();
 
     cout << endl << "n3" << endl << "Введите  x" << endl;
-    //n3();
+    n3();
 
     cout << endl << "n4" << endl << "Введите  x" << endl;
-    //n4();
+    n4();
 
     cout << endl << "n5" << endl << "Введите  x,n" << endl;
     n5();

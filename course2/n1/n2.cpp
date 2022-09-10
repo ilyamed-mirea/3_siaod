@@ -40,7 +40,7 @@ void printArr(int* arr) {
     }
 }
 
-int main() {
+int mainX() {
     system("chcp 65001");
 
     int* arr = new int[SIZE] {0};
