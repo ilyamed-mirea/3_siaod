@@ -9,7 +9,7 @@ template <class fileStream>
 void checkFileOpen(fileStream& file, string FILE_NAME) {
 	while (!file.is_open()) {
 		file.open(FILE_NAME);
-		cout << "Ошибка при открытии файла. введите 1 для повторной попытки или 0 для завершения" << endl;
+		cout << "error occured while openning the file. try again" << endl;
 		int r;
 		cin >> r;
 		if (r == 0)
@@ -29,18 +29,18 @@ void createAndFillFile(ofstream& file, string FILE_NAME) {
 		}
 	}
 	else {
-		cout << "Сколько чисел хотите ввести?" << endl;
+		cout << "how many numbers?" << endl;
 		int colv;
 		cin >> colv;
-		cout << "Сколько чисел будет в ряду?" << endl;
+		cout << "how many in 1 row?" << endl;
 		int row;
 		cin >> row;
 		for (int i = 0; i < colv; i++) {
-			cout << "Введите " << i << " число: ";
+			cout << "write " << i+1 << " num: ";
 			int x;
 			cin >> x;
 			file << x << ' ';
-			if (i % row == 0) file << endl;
+			if ((i+1) % row == 0) file << endl;
 		}
 	}
 	file.close();
@@ -91,25 +91,32 @@ void countNumbers(ifstream& file, string FILE_NAME) {
 	file.open(FILE_NAME);
 	checkFileOpen(file, FILE_NAME);
 	int x, counter = 0;
-	while (!file.eof())
-	{
-		file >> x;
-		counter++;
-		file.get();
-	}
+	while (file >> x) counter++;
 	cout << counter << " numbers in file" << endl;
 	file.close();
 }
 
 void variantTask(ofstream& ofile, ifstream& ifile, string FILE_NAME) {
-	ifile.open("newFile.txt");
-	ofile.open(FILE_NAME);
+    const string NEW_FILE_NAME = "newFile.txt";
+    ofile.open(NEW_FILE_NAME);
+    checkFileOpen(ofile,NEW_FILE_NAME);
+	ifile.open(FILE_NAME);
+    checkFileOpen(ifile, FILE_NAME);
 
+    while (!ifile.eof()) {
+        int x, length = 0;
+        ifile >> x;
+        if (x==0) length=1;
+        for (int i=x;i>0;i/=10,length++);
+        ofile << x << " " << length << endl;
+    }
+    ifile.close();
+    ofile.close();
 }
 
 int main() {
-	//system("chcp 65001");
-	setlocale(LC_ALL, "Russian");
+	system("chcp 65001");
+	//setlocale(LC_ALL, "Russian");
 
 	string FILE_NAME;
 	if (testMode) {
@@ -124,15 +131,15 @@ int main() {
 	ifstream fread;
 	ofstream fwrite;
 
-	cout << "Медведев И.В. ИНБО-08-21" << endl;
+	cout << "Medvedev I.V. INBO-08-21" << endl;
 	while (menu != 0) {
 		cout << "-----------------------------------------------------" << endl;
-		cout << "Для создания файла и заполнения его числами введите 1" << endl;
-		cout << "Для вывода файла в консоль введите 2" << endl;
-		cout << "Для вывода значения с определенной позиции введите 3" << endl;
-		cout << "Для вывода количества чисел в файле введите 4" << endl;
-		cout << "Для выполнения задачи варианта введите 5" << endl;
-		cout << "Для выхода введите 0" << endl;
+		cout << "1) create and fill file" << endl;
+		cout << "2) print file" << endl;
+		cout << "3) print value at position" << endl;
+		cout << "4) count numbers in file" << endl;
+		cout << "5) variant task" << endl;
+		cout << "0) exit" << endl;
 		cin >> menu;
 		switch (menu) {
 		case 0:
@@ -152,7 +159,7 @@ int main() {
 			countNumbers(fread, FILE_NAME);
 			break;
 		case 5:
-			variantTask(fread, FILE_NAME);
+			variantTask(fwrite, fread, FILE_NAME);
 			break;
 		default:
 			break;
