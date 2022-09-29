@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 #define SIZE (8999999 / 32 + 1)
- 
-void getArr(int* arr) {
-    unsigned int len; 
+
+void getArr(int *arr) {
+    unsigned int len;
     cout << "write arr length" << endl;
     while (cin >> len) {
         if (len > 0) break;
@@ -20,34 +21,35 @@ void getArr(int* arr) {
                 cout << "number must have 7 digits. try again" << endl;
                 continue;
             }
-            num -= 1000000; //optimisation 
-            unsigned int bits = 1 << (32 - (num % 32) - 1);
+            num -= 1000000;
+            unsigned int bits = 1 << (32 - (num >> 5) - 1);
             arr[num / 32] |= bits;
             break;
         }
     }
 }
 
-void printArr(int* arr) {
+void printArr(const int *arr) {
     cout << "result:" << endl;
-    for (int posinArr=0; posinArr<SIZE; posinArr++) {
+    for (int posinArr = 0; posinArr < SIZE; posinArr++) {
         unsigned mask = (1 << (32 - 1));
         for (int i = 0; i < 32; i++) {
             if ((arr[posinArr] & mask) >> (32 - 1 - i) == 1)
-                cout << i + posinArr*32 + 1000000 << endl;
+                cout << i + (posinArr << 5) + 1000000 << endl;
             mask = mask >> 1;
         }
     }
 }
 
-int mainX() {
+int main() {
     system("chcp 65001");
 
-    int* arr = new int[SIZE] {0};
-    
+    int *arr = new int[SIZE]{0};
+
     getArr(arr);
     printArr(arr);
-    cout << endl <<"write num to exit" << endl;
+
+    cout << endl << "write num to exit" << endl;
     int pause;
     cin >> pause;
 
