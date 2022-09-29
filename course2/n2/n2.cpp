@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const bool testMode = true;
+const bool testMode = false;
 
 struct scheduleRecord {
     int key;
@@ -18,9 +18,7 @@ struct scheduleRecord {
     char typeOfClass[30];
     int roomNum;
 
-    scheduleRecord() {}
-
-    scheduleRecord(bool manualFill) {
+    scheduleRecord(bool manualFill = false) {
         if (!manualFill) return;
         key = rand();
         cout << "write group id: ";
@@ -60,8 +58,7 @@ void openFile(fileStream &file, string FILE_NAME, const string &dir = "in", cons
             else file.open(FILE_NAME, ios::out | ios::binary);
         } else file.open(FILE_NAME);
         if (!file.is_open() || !file) {
-            cout << "error occured while openning the file. try again" << endl;
-
+            cout << "error occured while openning the file. write any number to try again or write 0 to exit." << endl;
             int r;
             cin >> r;
             if (r == 0)
@@ -72,8 +69,11 @@ void openFile(fileStream &file, string FILE_NAME, const string &dir = "in", cons
 
 void createTxtFile(ofstream &file, const string &FILE_NAME) {
     openFile(file, FILE_NAME);
+    cout << "write 0 for default values or 1 for manual input?" << endl;
+    int ind;
+    cin >> ind;
 
-    if (testMode) {
+    if (testMode || ind == 0) {
         //int key; int groupId; char disciplineName[30]; int paraNum; int weekNum; int weekDay; char typeOfClass[30]; int roomNum;
         file << 2345 << endl << 12 << endl << "SIAOD" << endl << 2 << endl << 2 << endl << 2 << endl << "LECTURE"
              << endl << 4 << endl;
@@ -83,7 +83,8 @@ void createTxtFile(ofstream &file, const string &FILE_NAME) {
              << endl << 2 << endl;
         file << 2908345 << endl << 3 << endl << "SIAOD" << endl << 3 << endl << 1 << endl << 3 << endl << "LECTURE"
              << endl << 17 << endl;
-        //file << 02323445 << endl << 3 << endl << "OCHM" << endl << 3 << endl << 2 << endl << 3 << endl << "LECTURE" << endl << 17 << endl;
+        file << 02323445 << endl << 3 << endl << "OCHM" << endl << 3 << endl << 2 << endl << 3 << endl << "LECTURE"
+             << endl << 17 << endl;
     } else {
         cout << "how many records?" << endl;
         int colv;
@@ -189,31 +190,8 @@ scheduleRecord getScheduleItemByIndex(ifstream &readFile, int index, string dire
 }
 
 void
-deleteScheduleItemByIndex(ifstream &readFile, ofstream &writeFile, int index,
-                          const string &binFileName = "undefined") {
-    if (writeFile.is_open()) writeFile.close();
-    if (readFile.is_open()) readFile.close();
-    scheduleRecord rec;
-    scheduleRecord lastRec = getScheduleItemByIndex(readFile, 0, "end", binFileName);
-    vector<scheduleRecord> newSchedule;
-    openFile(readFile, binFileName, "in", "binary");
-    for (int i = 1; readFile.read((char *) &rec, sizeof(scheduleRecord)); i++) {
-        if (i == index) newSchedule.push_back(lastRec);
-        else newSchedule.push_back(rec);
-    }
-    newSchedule.pop_back();
-    readFile.close();
-    openFile(writeFile, binFileName, "out", "binary");
-    for (scheduleRecord rec2: newSchedule)
-        writeFile.write((char *) &rec2, sizeof(scheduleRecord));
-    writeFile.close();
-}
-
-void
 deleteScheduleItemByKey(ifstream &readFile, ofstream &writeFile, int key,
                         const string &binFileName = "undefined") {
-    if (writeFile.is_open()) writeFile.close();
-    if (readFile.is_open()) readFile.close();
     scheduleRecord rec;
     scheduleRecord lastRec = getScheduleItemByIndex(readFile, 0, "end", binFileName);
     vector<scheduleRecord> newSchedule;
@@ -319,7 +297,6 @@ int main() {
         cout << "8) create txt file from bin file" << endl;
         cout << "9) write schedule item by index" << endl;
         cout << "10) delete schedule item by key" << endl;
-        cout << "11) delete schedule item by index" << endl;
         cout << "0) exit" << endl;
         cin >> menu;
         switch (menu) {
@@ -353,8 +330,7 @@ int main() {
                 cout << "write index" << endl;
                 int index;
                 cin >> index;
-                getScheduleItemByIndex(readFile, index, "beg", binFileName).print();;
-
+                getScheduleItemByIndex(readFile, index, "beg", binFileName).print();
                 break;
             }
             case 10:
@@ -363,27 +339,10 @@ int main() {
                 cin >> key;
                 deleteScheduleItemByKey(readFile, writeFile, key, binFileName);
                 break;
-            case 11:
-                cout << "write index" << endl;
-                int ind;
-                cin >> ind;
-                deleteScheduleItemByIndex(readFile, writeFile, ind, binFileName);
-                break;
             default:
                 break;
         }
     }
-
-    //createTxtFile(writeFile, fileName);
-    //printOutFile(readFile,fileName);
-    //createBinFromTxt(readFile, writeFile, fileName, binFileName);
-    //printOutBinFile(readFile, binFileName);
-    //deleteScheduleItemByIndex(readFile, writeFile, 3, binFileName);
-    //printOutBinFile(readFile, binFileName);
-    //formScheduleByDay(readFile, binFileName, writeFile, formedScheduleFileName);
-    //printOutBinFile(readFile, formedScheduleFileName);
-    //refreshAndFixSchedule(readFile, writeFile, binFileName);
-    //printOutBinFile(readFile, binFileName);
 
     system("pause");
 
