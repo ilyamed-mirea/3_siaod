@@ -11,10 +11,11 @@ void getArr(int *arr) {
     while (cin >> len) {
         if (len > 0) break;
         else cout << "too low. try again" << endl;
-    };
+    }
+
     for (int i = 0; i < len; i++) {
         while (true) {
-            int num;
+            int num = 0;
             cout << endl << "write arr[" << i << "]:" << endl;
             cin >> num;
             if (num > 9999999 || num < 1000000) {
@@ -22,7 +23,7 @@ void getArr(int *arr) {
                 continue;
             }
             num -= 1000000;
-            unsigned int bits = 1 << (32 - (num >> 5) - 1);
+            unsigned int bits = 1 << (32 - (num & 31) - 1);
             arr[num / 32] |= bits;
             break;
         }
@@ -30,7 +31,7 @@ void getArr(int *arr) {
 }
 
 void printArr(const int *arr) {
-    cout << "result:" << endl;
+    cout << endl << "result:" << endl;
     for (int posinArr = 0; posinArr < SIZE; posinArr++) {
         unsigned mask = (1 << (32 - 1));
         for (int i = 0; i < 32; i++) {
