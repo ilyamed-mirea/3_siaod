@@ -2,10 +2,22 @@
 #include <string>
 using namespace std;
 
+void bonus() {
+    //     p
+    // 101110 = 46
+    // res 000010 = 2
+    // p = 1;
+    int x,p;
+    cin >> x >> p;
+    unsigned int mask = ~0 << (p + 1);
+    x = x & (~mask);
+    cout << x << endl;
+}
+
 void n1() {
-    unsigned int mask = 0x86; //134 в 10
-    unsigned int x = 0x1A1; //1 в 10
-    int res = x | mask; //135 в 10
+    unsigned int mask = 0x86;
+    unsigned int x = 0x1A1;
+    int res = x | mask;
     cout << res << endl;
 }
 
@@ -13,8 +25,8 @@ void n2() {
     unsigned int mask = 0xFF;
     unsigned int x;
     cin >> x;
+    //cout << (x & ~((1 << 7) | (1 << 8) | (1 << 9)));
     x = x & mask;
-    //x = x & ~((mask << 7) | (mask << 8) | (mask << 9));
     cout << x << endl; //int
     printf("%#010x", x); //16x sys
 }
@@ -38,13 +50,13 @@ void n5() {
     cin >> x >> n;
     const unsigned mask = 1;
     x = x & ~(mask << n);
-    cout << x << endl; //int
+    cout << x << endl;
 }
 
-int mainX() {
+int main() {
 
     system("chcp 65001");
-    
+
     unsigned int n,x = 0x0;
     cout << "n1" << endl;
     n1();

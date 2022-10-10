@@ -3,10 +3,12 @@
 #include <vector>
 #include "istream"
 #include <string>
+#include <unistd.h>
+#include <filesystem>
 
 using namespace std;
 
-const bool testMode = false;
+const bool testMode = true;
 
 struct scheduleRecord {
     int key;
@@ -194,8 +196,29 @@ deleteScheduleItemByKey(ifstream &readFile, ofstream &writeFile, int key,
                         const string &binFileName = "undefined") {
     scheduleRecord rec;
     scheduleRecord lastRec = getScheduleItemByIndex(readFile, 0, "end", binFileName);
-    vector<scheduleRecord> newSchedule;
+
     openFile(readFile, binFileName, "in", "binary");
+    int i=0;
+    while (!readFile.eof()) {
+        readFile.read((char *) &rec, sizeof(scheduleRecord));
+        if (rec.key==key) {
+            readFile.seekg(i,ios::beg);
+            readFile.read((char *) &rec, sizeof(scheduleRecord));
+        }
+        else i++;
+    }
+    readFile.close();
+
+    openFile(writeFile, binFileName, "out", "binary");
+    writeFile.seekp(i,ios::beg);
+    writeFile.write((char *) &rec, sizeof(scheduleRecord));
+    writeFile.close();
+
+    //truncate(binFileName.c_str(),i*sizeof(scheduleRecord));
+
+    filesystem::resize_file(binFileName,i*sizeof(scheduleRecord));
+
+    /*openFile(readFile, binFileName, "in", "binary");
     while (readFile.read((char *) &rec, sizeof(scheduleRecord))) {
         if (rec.key == key) newSchedule.push_back(lastRec);
         else newSchedule.push_back(rec);
@@ -206,6 +229,7 @@ deleteScheduleItemByKey(ifstream &readFile, ofstream &writeFile, int key,
     for (scheduleRecord rec2: newSchedule)
         writeFile.write((char *) &rec2, sizeof(scheduleRecord));
     writeFile.close();
+     */
 }
 
 void formScheduleByDay(ifstream &readFile, const string &binFileName, ofstream &writeFile,
