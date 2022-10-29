@@ -77,7 +77,7 @@ void printOutFile(ifstream &file, string FILE_NAME) {
 
 template<class valueToWrite>
 void writeInFile(ofstream &file, string FILE_NAME, valueToWrite x) {
-    file.open(FILE_NAME);
+    file.open(FILE_NAME); //append
     checkFileOpen(file, FILE_NAME);
     file << x;
     file.close();

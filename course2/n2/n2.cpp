@@ -197,13 +197,30 @@ deleteScheduleItemByKey(ifstream &readFile, ofstream &writeFile, int key,
     scheduleRecord rec;
     scheduleRecord lastRec = getScheduleItemByIndex(readFile, 0, "end", binFileName);
 
+    fstream file;
+    file.open(binFileName, ios::in | ios::out | ios::binary);
+    file.seekg(-1*sizeof(scheduleRecord),ios::end);
+    int sizeWithoutLast = file.tellg();
+    file.seekg(0,ios::beg);
+
+    int i = 0;
+    while (file.read((char *) &rec, sizeof(scheduleRecord)) && rec.key!=key) {
+        i++;
+    }
+
+    file.seekg(i*sizeof(scheduleRecord),ios::beg);
+    file.write((char*)& lastRec, sizeof(scheduleRecord));
+    truncate(binFileName.c_str(), sizeWithoutLast);
+
+    /*
     openFile(readFile, binFileName, "in", "binary");
     int i=0;
     while (!readFile.eof()) {
         readFile.read((char *) &rec, sizeof(scheduleRecord));
         if (rec.key==key) {
-            readFile.seekg(i,ios::beg);
-            readFile.read((char *) &rec, sizeof(scheduleRecord));
+            //readFile.seekg(i,ios::beg);
+    //readFile.read((char *) &rec, sizeof(scheduleRecord));
+            break;
         }
         else i++;
     }
@@ -213,10 +230,10 @@ deleteScheduleItemByKey(ifstream &readFile, ofstream &writeFile, int key,
     writeFile.seekp(i,ios::beg);
     writeFile.write((char *) &rec, sizeof(scheduleRecord));
     writeFile.close();
-
+*/
     //truncate(binFileName.c_str(),i*sizeof(scheduleRecord));
 
-    filesystem::resize_file(binFileName,i*sizeof(scheduleRecord));
+    //filesystem::resize_file(binFileName,i*sizeof(scheduleRecord));
 
     /*openFile(readFile, binFileName, "in", "binary");
     while (readFile.read((char *) &rec, sizeof(scheduleRecord))) {
