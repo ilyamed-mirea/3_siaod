@@ -3,7 +3,7 @@ project(siaod)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(siaod course2/n3/n1.cpp)
+add_executable(siaod course2/n3/main.cpp course2/n3/hashTable.cpp course2/n3/hashTable.h)
 
 
 
