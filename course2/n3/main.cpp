@@ -4,7 +4,8 @@
 #include <string>
 #include <unistd.h>
 #include <cmath>
-#include "hashTable.h"
+#include "hashTable.cpp"
+#include "binary.h"
 
 using namespace std;
 
@@ -18,12 +19,10 @@ int main() {
     insertInHashTable(102, 5, table);
     insertInHashTable(107, 3, table);
     insertInHashTable(117, 2, table);
-    insertInHashTable(205, 4, table);
-    insertInHashTable(202, 7, table);
-    insertInHashTable(113, 6, table);
-    insertInHashTable(109, 8, table);
+    insertInHashTable(105, 4, table);
+    insertInHashTable(102, 7, table);
 
-    search(table, 117);
+    //search(table, 117);
 
-    outHashTable(table);
+    printHashTable(table);
 }
