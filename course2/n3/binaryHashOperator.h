@@ -8,6 +8,6 @@
 
 void fillTableFromBin(HashTable &table, const std::string &binFileName);
 void removeEntry(HashTable &table, const std::string &binFileName, int groupId);
-
+groupElement findInBinByKey(HashTable &table, int groupId);
 
 #endif //SIAOD_BINARYHASHOPERATOR_H

@@ -10,6 +10,12 @@ groupElement::groupElement() {
     studentCount = -1;
     predmetId = -1;
 }
+groupElement::groupElement(int groupId) {
+    this->groupId = groupId;
+    this->medianScore = -1;
+    this->studentCount = -1;
+    this->predmetId = -1;
+}
 
 groupElement::groupElement(int groupId, double medianScore, int studentCount, int predmetId) {
     this->groupId = groupId;
@@ -40,28 +46,19 @@ int hashIndex(int groupId, int length) {
     return groupId % length;
 }
 
-int HashTable::insert(groupElement gotElement) {
+int HashTable::insert(groupElement gotElement, int entryId) {
     int i = hashIndex(gotElement.groupId, this->length);
     tableNode *currentNode = this->rows[i]; //head
-    int entryId = 0; //nomer vhozhdenia
-    if (currentNode == nullptr) { //new index/row - no collision
-        this->filled++;
-        if (this->filled / this->length >= 0.75) {
-            this->rehash();
-            i = hashIndex(gotElement.groupId, this->length);
-            currentNode = this->rows[i];
-        }
-    }
-    while (currentNode && currentNode->next != nullptr) {
-        currentNode = currentNode->next;
-        entryId++;
-    }
-    auto *newNode = new tableNode(gotElement.groupId, entryId);
-    if (entryId == 0) //newIndex
-        currentNode = newNode;
+    while (currentNode && currentNode->next!=nullptr)
+        currentNode=currentNode->next;
+    tableNode newNode(gotElement.groupId, entryId);
+    if (!currentNode ) //newIndex
+        currentNode = &newNode;
     else
-        currentNode->next = newNode;
-
+        currentNode->next = &newNode;
+    this->filled++;
+    if (this->filled / this->length >= 0.75)
+        this->rehash();
     return 0;
 }
 
@@ -70,9 +67,14 @@ int HashTable::rehash() {
     this->length = this->length * 2;
     HashTable newTable(this->length);
     for (int i = 0; i < oldLength; i++) {
-        newTable
+        int groupId = this->rows[i]->groupId;
+        groupElement temp(groupId);
+        newTable.insert(temp);
     }
-    this->rows = newTable.rows;
+    for (int i = 0; i < oldLength; i++) {
+        this->rows[i]=newTable.rows[i];
+    }
+    //this->rows = newTable.rows;
     return 0;
 }
 
@@ -92,11 +94,14 @@ int HashTable::print() {
     cout << "go\n" << endl;
     for (int i = 0; i < this->length; i++) {
         tableNode *currentElement = this->rows[i];
-        while (currentElement->next != nullptr) {
-            cout << i << ' ' << currentElement->groupId << ' ' << endl;
+        cout << i<<":";
+        while (currentElement && currentElement->next != nullptr) {
+            cout << ' ' << currentElement->groupId << ' ';
             currentElement = currentElement->next;
         }
+        cout << endl;
     }
+    return 0;
 }
 
 int HashTable::remove(int groupId) {

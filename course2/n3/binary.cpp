@@ -12,7 +12,8 @@ void openFile(fileStream &file, string FILE_NAME, const string &dir, const strin
     while (!file.is_open() || !file) {
         if (type == "binary") {
             if (dir == "in") file.open(FILE_NAME, ios::in | ios::binary);
-            else file.open(FILE_NAME, ios::out | ios::binary);
+            else if (dir=="out") file.open(FILE_NAME, ios::out | ios::binary);
+            else file.open(FILE_NAME, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
         } else file.open(FILE_NAME);
         if (!file.is_open() || !file) {
             cout << "error occured while openning the file. write any number to try again or write 0 to exit." << endl;
@@ -24,43 +25,52 @@ void openFile(fileStream &file, string FILE_NAME, const string &dir, const strin
     }
 }
 
-void createTxtFile(string FILE_NAME) {
+int getFileLength(const string &binFileName) {
+    fstream file;
+    file.open(binFileName, ios::in | ios::out | ios::binary);
+    file.seekg(0,ios::end);
+    int size =  file.tellg();
+    file.close();
+    return size / sizeof(groupElement);
+}
+
+void createTxtFile(const string &txtFileName) {
     ofstream file;
     //cout << "write file name";
     //getline(cin,fileName);
-    openFile(file, FILE_NAME);
+    openFile(file, txtFileName);
     //cout << "write 0 for default values or 1 for manual input?" << endl;
     //int ind;
     //cin >> ind;
     //int groupId; double medianScore; int studentCount; int predmetId;
     file << 12 << endl << 4.2 << endl << 28 << endl << 1 << endl;
     file << 14 << endl << 3 << endl << 15 << endl << 3 << endl;
-    file << 12 << endl << 4.2 << endl << 28 << endl << 2 << endl;
+    file << 112 << endl << 4.2 << endl << 28 << endl << 2 << endl;
     file << 25 << endl << 3.6 << endl << 30 << endl << 2 << endl;
-    file << 66 << endl << 4.9 << endl << 25 << endl << 6 << endl;
+    file << 66 << endl << 4.9 << endl << 25 << endl << 6;
+
+    /*file << 11 << endl << 2.1 << endl << 7 << endl << 1 << endl;
+    file << 3 << endl << 2 << endl << 6 << endl << 3 << endl;
+    file << 255 << endl << 2.2 << endl << 5 << endl << 5 << endl;
+    file << 666 << endl << 2.3 << endl << 4 << endl << 4 << endl;
+    file << 1232 << endl << 2.9 << endl << 3 << endl << 6 << endl;*/
     file.close();
 }
 
 void createBinFromTxt(const string &txtFileName, const string &binFileName) {
     ifstream readFile;
-    //ofstream writeFile;
     openFile(readFile, txtFileName);
-    //openFile(writeFile, binFileName, "out", "binary");
     groupElement groupElement;
-
     while (readFile >> groupElement.groupId >> groupElement.medianScore >> groupElement.studentCount
                     >> groupElement.predmetId) {
-        //writeFile.write((char *) &groupElement, sizeof(groupElement));
         addEntryInBin(binFileName, groupElement);
     }
-
     readFile.close();
-    //writeFile.close();
 }
 
 void addEntryInBin(const string &binFileName, groupElement entry) {
     ofstream writeFile;
-    openFile(writeFile, binFileName, "out", "binary");
+    openFile(writeFile, binFileName, "app", "binary");
     writeFile.write((char *) &entry, sizeof(groupElement));
     writeFile.close();
 }
@@ -69,8 +79,8 @@ groupElement getEntryFromBin(const string &binFileName, int order) {
     ifstream readFile;
     openFile(readFile, binFileName, "in", "binary");
     groupElement entry;
-    for (int i = 0; i < order; i++)
-        readFile.read((char *) &entry, sizeof(groupElement));
+    readFile.seekg(sizeof(groupElement) * order, ios::beg);
+    readFile.read((char *) &entry, sizeof(groupElement));
     readFile.close();
     return entry;
 }
