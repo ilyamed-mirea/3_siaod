@@ -6,28 +6,23 @@
 #include <cmath>
 
 #include "hashTable.cpp"
-#include "hashTable.h"
-#include "binary.h"
+#include "binary.cpp"
+#include "binaryHashOperator.cpp"
 
 using namespace std;
 
 const bool testMode = true;
+const string FILE_NAME = "hash.txt";
+const string BIN_FILE_NAME = "bin_hash.bin";
 
 int main() {
     system("chcp 65001");
 
+    createTxtFile(FILE_NAME);
+    createBinFromTxt(FILE_NAME, BIN_FILE_NAME);
     HashTable table(10);
-    int code = table.insert(105);
-    cout<<"inserted\n";
-    table.insert(102);
-    table.insert(107);
-    table.insert(117);
-    table.insert(105);
-    table.insert(102);
-
-    cout<<"inserted\n";
-
+    fillTableFromBin(table,BIN_FILE_NAME);
     //search(table, 117);
 
-    table.print();
+    //table.print();
 }

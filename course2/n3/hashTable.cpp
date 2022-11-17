@@ -1,118 +1,108 @@
 #include <iostream>
 #include "hashTable.h"
+
 using namespace std;
 
-struct groupElement {
-    int groupId;
-    int entryId;
-    double medianScore;
-    int studentCount;
-    string predmet;
-    groupElement *next;
+groupElement::groupElement() {
+    srand(time(nullptr));
+    groupId = rand() % 100;
+    medianScore = -1;
+    studentCount = -1;
+    predmetId = -1;
+}
 
-    groupElement() {
-        srand(time(nullptr));
-        groupId = rand() % 100;
-        medianScore = 4.7;
-        studentCount = 0;
-        predmet = "none";
-        next = nullptr;
-    }
-    groupElement(int groupId, double medianScore, int studentCount, string predmet, int entryId) {
-        this->groupId = groupId;
-        this->medianScore = medianScore;
-        this->studentCount = studentCount;
-        this->entryId = entryId;
-        this->predmet = predmet;
-        this->next = nullptr;
-    }
-};
+groupElement::groupElement(int groupId, double medianScore, int studentCount, int predmetId) {
+    this->groupId = groupId;
+    this->medianScore = medianScore;
+    this->studentCount = studentCount;
+    //this->entryId = entryId;
+    this->predmetId = predmetId;
+}
 
-//hash get add remove print rehash
-struct HashTable {
-    int length;
-    int filled;
-    groupElement **rows;
-    HashTable(int length=10) {
-        rows = new groupElement*[length]{nullptr};
-        this->length = length;
-        this->filled = 0;
-        //insertedCount = 0;
-        //deletedCount = 0;
-    }
-    int insert(int groupId);
-    int rehash();
-    int print();
-    ~HashTable() {
-        rows = nullptr;
-    }
-};
+tableNode::tableNode(int groupId, int entryId, tableNode *next) {
+    this->groupId = groupId;
+    this->entryId = entryId;
+    this->next = next;
+}
+
+HashTable::HashTable(int length) {
+    rows = new tableNode *[length]{nullptr};
+    this->length = length;
+    this->filled = 0;
+}
+
+HashTable::~HashTable() {
+    rows = nullptr;
+}
 
 //хеш-функция
 int hashIndex(int groupId, int length) {
     return groupId % length;
 }
 
-//вставка без рехеширования
-int HashTable::insert(int groupId) {
-    int i = hashIndex(groupId, this->length);
-    groupElement *currentElement = this->rows[i]; //head
-    int entryId = 1;
-    /*if (currentElement.studentCount ==0) //change head
-        entryId=1;
-    else entryId=0;*/
-    while (currentElement && currentElement->next != nullptr) {
-        entryId++;
-        currentElement = currentElement->next;
-    }
-    entryId++; //new after last
-    if (i >= this->length)
-        return 1;
-    else {
-        int groupId = 0; double medianScore = 0; int studentCount = 0;
-        cin >> groupId >> medianScore >> studentCount;
-        string predmet;
-        getline(cin,predmet);
-        getline(cin,predmet);
-        groupElement *newElement = new groupElement(groupId, medianScore, studentCount, predmet, entryId);
-        currentElement->next = newElement;
+int HashTable::insert(groupElement gotElement) {
+    int i = hashIndex(gotElement.groupId, this->length);
+    tableNode *currentNode = this->rows[i]; //head
+    int entryId = 0; //nomer vhozhdenia
+    if (currentNode == nullptr) { //new index/row - no collision
         this->filled++;
-        //if (this->filled/this->length>=0.75)
-        //    this->rehash();
-        return 0;
+        if (this->filled / this->length >= 0.75) {
+            this->rehash();
+            i = hashIndex(gotElement.groupId, this->length);
+            currentNode = this->rows[i];
+        }
     }
-}
+    while (currentNode && currentNode->next != nullptr) {
+        currentNode = currentNode->next;
+        entryId++;
+    }
+    auto *newNode = new tableNode(gotElement.groupId, entryId);
+    if (entryId == 0) //newIndex
+        currentNode = newNode;
+    else
+        currentNode->next = newNode;
 
-int HashTable::rehash() {
     return 0;
 }
 
-int search(HashTable &table, int groupId) {
-    return -1;
-    /*int i = hashIndex(groupId, table.length);
-    groupElement *item = &table.rows[i];
-    while (i < table.length && item->groupId != groupId &&
-           (
-                   (!item->isOpen && !item->isDeleted) //ячейка закрыта и не удалена
-                   ||
-                   (item->isOpen && item->isDeleted) //ячейка открыта и удалена
-           )) {
-        item = &table.rows[++i];
+int HashTable::rehash() {
+    int oldLength = this->length;
+    this->length = this->length * 2;
+    HashTable newTable(this->length);
+    for (int i = 0; i < oldLength; i++) {
+        newTable
     }
-    if (item->isOpen && !item->isDeleted) {
-        return -1;
+    this->rows = newTable.rows;
+    return 0;
+}
+
+tableNode *HashTable::search(int groupId, int entryId) {
+    int i = hashIndex(groupId, this->length);
+    tableNode *node = this->rows[i];
+    while (node && node->next != nullptr && node->groupId != groupId && (entryId == -1 || node->entryId != entryId)) {
+        node = node->next;
     }
-    return item->offset;*/
+    if (node->groupId == groupId && (entryId == -1 || node->entryId == entryId))
+        return node;
+    else return nullptr;
 }
 
 //вывод таблицы
 int HashTable::print() {
-    cout << "go\n"<<endl;
+    cout << "go\n" << endl;
     for (int i = 0; i < this->length; i++) {
-        groupElement *currentElement = this->rows[i];
-        while (currentElement->next!=nullptr) {
+        tableNode *currentElement = this->rows[i];
+        while (currentElement->next != nullptr) {
             cout << i << ' ' << currentElement->groupId << ' ' << endl;
             currentElement = currentElement->next;
         }
     }
+}
+
+int HashTable::remove(int groupId) {
+    tableNode *currentNode = this->search(groupId);
+    tableNode *prevNode = this->search(groupId, currentNode->entryId - 1);
+    tableNode *nextNode = this->search(groupId, currentNode->entryId + 1);
+    prevNode->next = nextNode;
+    return 0;
 }

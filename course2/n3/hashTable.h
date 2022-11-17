@@ -2,11 +2,36 @@
 // Created by ilyaMedvedev on 02.11.2022.
 //
 
-#ifndef SIAOD_HASHTABLE_H
-#define SIAOD_HASHTABLE_H
+#ifndef HASHTABLE_H
+#define HASHTABLE_H
 
-struct groupElement;
-struct HashTable;
+struct groupElement {
+    int groupId;
+    double medianScore;
+    int studentCount;
+    int predmetId;
+    groupElement();
+    groupElement(int groupId, double medianScore, int studentCount, int predmetId);
+};
+struct tableNode {
+    int groupId;
+    int entryId;
+    tableNode *next = nullptr;
+    tableNode(int groupId, int entryId, tableNode *next = nullptr);
+};
+//hash get add remove print rehash
+struct HashTable {
+    int length;
+    int filled;
+    tableNode **rows;
+    HashTable(int length=10);
+    int insert(groupElement gotElement);
+    int remove(int groupId);
+    tableNode *search(int groupId, int entryId = -1);
+    int rehash();
+    int print();
+    ~HashTable();
+};
 int hashIndex(int groupId, int length);
 
-#endif //SIAOD_HASHTABLE_H
+#endif //HASHTABLE_H
