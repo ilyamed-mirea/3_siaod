@@ -33,14 +33,18 @@ struct HashTable {
     int length;
     int filled;
     groupElement **rows;
-    //int insertedCount; //колво вставленных ключей
-    //int deletedCount; //колво удаленных ключей
     HashTable(int length=10) {
-        *rows = new groupElement[length];
+        rows = new groupElement*[length]{nullptr};
         this->length = length;
         this->filled = 0;
         //insertedCount = 0;
         //deletedCount = 0;
+    }
+    int insert(int groupId);
+    int rehash();
+    int print();
+    ~HashTable() {
+        rows = nullptr;
     }
 };
 
@@ -50,34 +54,37 @@ int hashIndex(int groupId, int length) {
 }
 
 //вставка без рехеширования
-int insertInHashTable(int groupId, int offset, HashTable &table) {
-    int i = hashIndex(groupId, table.length);
-    groupElement currentElement = *table.rows[i]; //head
-    groupElement *newElement;
+int HashTable::insert(int groupId) {
+    int i = hashIndex(groupId, this->length);
+    groupElement *currentElement = this->rows[i]; //head
     int entryId = 1;
     /*if (currentElement.studentCount ==0) //change head
         entryId=1;
     else entryId=0;*/
-    while (currentElement.next != nullptr) {
+    while (currentElement && currentElement->next != nullptr) {
         entryId++;
-        currentElement = *currentElement.next;
+        currentElement = currentElement->next;
     }
     entryId++; //new after last
-    if (i >= table.length)
+    if (i >= this->length)
         return 1;
     else {
         int groupId = 0; double medianScore = 0; int studentCount = 0;
         cin >> groupId >> medianScore >> studentCount;
         string predmet;
         getline(cin,predmet);
-        newElement = new groupElement(groupId, medianScore, studentCount, predmet, entryId);
-        currentElement.next = newElement;
-        table.filled++;
-        //currentElement.offset = offset;
-        //currentElement.isOpen = false;
-        //table.insertedCount++;
+        getline(cin,predmet);
+        groupElement *newElement = new groupElement(groupId, medianScore, studentCount, predmet, entryId);
+        currentElement->next = newElement;
+        this->filled++;
+        //if (this->filled/this->length>=0.75)
+        //    this->rehash();
         return 0;
     }
+}
+
+int HashTable::rehash() {
+    return 0;
 }
 
 int search(HashTable &table, int groupId) {
@@ -99,9 +106,10 @@ int search(HashTable &table, int groupId) {
 }
 
 //вывод таблицы
-void printHashTable(HashTable table) {
-    for (int i = 0; i < table.length; i++) {
-        groupElement *currentElement = table.rows[i];
+int HashTable::print() {
+    cout << "go\n"<<endl;
+    for (int i = 0; i < this->length; i++) {
+        groupElement *currentElement = this->rows[i];
         while (currentElement->next!=nullptr) {
             cout << i << ' ' << currentElement->groupId << ' ' << endl;
             currentElement = currentElement->next;
