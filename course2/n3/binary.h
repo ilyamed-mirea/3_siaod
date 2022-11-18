@@ -8,6 +8,8 @@ void createTxtFile(const std::string &txtFileName);
 
 void createBinFromTxt(const std::string &txtFileName, const std::string &binFileName);
 
+void printOutBinFile(const std::string &binFileName);
+
 void addEntryInBin(const string &binFileName, groupElement entry = *new groupElement());
 
 groupElement getEntryFromBin(const string &binFileName, int order = 0);
