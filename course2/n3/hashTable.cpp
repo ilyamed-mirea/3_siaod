@@ -67,62 +67,60 @@ int HashTable::insert(groupElement gotElement, int entryId) {
 
 int HashTable::rehash() {
     int oldLength = this->length;
-    this->length *= 2;
-    HashTable newTable(this->length);
+    tableNode **oldRows = this->rows;
+    this->rows = new tableNode *[this->length *= 2]{nullptr};
+    this->filled = 0;
     for (int i = 0; i < oldLength; i++) {
-        tableNode *temp = this->rows[i];
-        if (temp) {
-            do {
-                int i = hashIndex(temp->groupId, this->length);
-                tableNode *x = newTable.rows[i];
-                if (x==nullptr)
-                    newTable.rows[i] = temp;
-                else {
-                    while (x->next) {
-                        x = x->next;
-                    }
-                    x->next = temp;
-                }
-                temp = temp->next;
-            } while (temp);
+        tableNode *currentNode = oldRows[i];
+        while (currentNode) {
+            this->insert(groupElement(currentNode->groupId), currentNode->entryId);
+            currentNode = currentNode->next;
         }
+        delete[] currentNode;
     }
-    for (int i = 0; i < this->length; i++) {
-        this->rows[i] = newTable.rows[i];
-    }
+    delete[] oldRows;
     return 0;
 }
 
-tableNode *HashTable::search(int groupId, int entryId) {
+tableNode *HashTable::search(int groupId, int entryId, int params) {
     int i = hashIndex(groupId, this->length);
     tableNode *node = this->rows[i];
-    while (node && node->groupId != groupId && (entryId == -1 || node->entryId != entryId)) {
+    while (node && node->groupId != groupId && (entryId == -1 || node->entryId != entryId) &&
+           (params == -1 && (node->next->groupId != groupId || this->rows[i]->groupId != groupId)))
         node = node->next;
-    }
-    if (node->groupId == groupId && (entryId == -1 || node->entryId == entryId))
+    if (params == +1 && node->next != nullptr)
+        node = node->next;
+    if (params == -1 && node->groupId==groupId)
+        return nullptr;
+    if (node->groupId == groupId || params==1 && (entryId == -1 || node->entryId == entryId))
         return node;
     else return nullptr;
 }
 
 //вывод таблицы
 int HashTable::print() {
-    cout << "go\n" << endl;
+    cout << "print:\n";
     for (int i = 0; i < this->length; i++) {
         tableNode *currentElement = rows[i];
         cout << i << ":";
         while (currentElement) {
-            cout << ' ' << currentElement->groupId << ' ';
+            cout << " (groupId: " << currentElement->groupId << " entryId: " << currentElement->entryId << ')';
             currentElement = currentElement->next;
         }
         cout << endl;
+        delete[] currentElement;
     }
     return 0;
 }
 
 int HashTable::remove(int groupId) {
-    tableNode *currentNode = this->search(groupId);
-    tableNode *prevNode = this->search(groupId, currentNode->entryId - 1);
-    tableNode *nextNode = this->search(groupId, currentNode->entryId + 1);
-    prevNode->next = nextNode;
+    //tableNode *currentNode = this->search(groupId);
+    tableNode *prevNode = this->search(groupId, -1, -1);
+    tableNode *nextNode = this->search(groupId, -1, +1);
+    if (!prevNode) {
+        int i = hashIndex(groupId, this->length);
+        this->rows[i] = nextNode;
+    }
+    else prevNode->next = nextNode;
     return 0;
 }

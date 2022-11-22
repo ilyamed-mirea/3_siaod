@@ -37,7 +37,7 @@ struct HashTable {
 
     int remove(int groupId);
 
-    tableNode *search(int groupId, int entryId = -1);
+    tableNode *search(int groupId, int entryId = -1, int params = 0);
 
     int rehash();
 

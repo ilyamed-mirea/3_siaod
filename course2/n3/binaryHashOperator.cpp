@@ -14,8 +14,12 @@ void fillTableFromBin(HashTable &table, const std::string &binFileName) {
 }
 
 void removeEntry(HashTable &table, const std::string &binFileName, int groupId) {
+    table.print();
     table.remove(groupId);
-    deleteEntryByKey(groupId, binFileName);
+    int newEntryId = deleteEntryByKey(groupId, binFileName);
+    tableNode *node = table.search(groupId);
+    node->entryId = newEntryId;
+    table.print();
 }
 
 groupElement findInBinByKey(HashTable &table, int groupId) {
@@ -43,6 +47,7 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
         cout << " 9. Find element in hashTable" << endl;
         cout << " 10. Remove from hashTable and BIN" << endl;
         cout << " 11. Find element by key" << endl;
+        cout << " 12. Print BIN file" << endl;
         cout << " 0. EXIT" << endl;
         cout << "numPunkt=";
         cin >> num;
@@ -60,7 +65,10 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 cin >> tableLength;
                 if (tableLength <= 0)
                     tableLength = getFileLength(BIN_FILE_NAME);
-                table = *(new HashTable(tableLength));
+                if (tableLength <= 0) {
+                    tableLength = 10;
+                }
+                table = HashTable(tableLength);
                 break;
             case 4:
                 fillTableFromBin(table, BIN_FILE_NAME);
@@ -69,6 +77,7 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 table.print();
                 break;
             case 6:
+                cout << "write groupId, medianScore, studentCount, predmetId" << endl;
                 int groupId1; double medianScore; int studentCount; int predmetId;
                 cin >> groupId1 >> medianScore >> studentCount >> predmetId;
                 elem = new groupElement(groupId1, medianScore,studentCount,predmetId);
@@ -98,6 +107,9 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 cin >> groupId5;
                 *elem = findInBinByKey(table,groupId5);
                 cout << elem->groupId << endl;
+                break;
+            case 12:
+                printOutBinFile(BIN_FILE_NAME);
                 break;
             case 0:
                 exit(0);

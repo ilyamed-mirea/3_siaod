@@ -14,7 +14,7 @@ void addEntryInBin(const string &binFileName, groupElement entry = *new groupEle
 
 groupElement getEntryFromBin(const string &binFileName, int order = 0);
 
-void deleteEntryByKey(int groupId, const string &binFileName);
+int deleteEntryByKey(int groupId, const string &binFileName);
 
 int getFileLength(const std::string &binFileName);
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem>
 
 using namespace std;
 
@@ -28,10 +29,13 @@ void openFile(fileStream &file, string FILE_NAME, const string &dir, const strin
 int getFileLength(const string &binFileName) {
     fstream file;
     file.open(binFileName, ios::in | ios::out | ios::binary);
-    file.seekg(0, ios::end);
-    int size = file.tellg();
+    groupElement entry;
+    int fileLength = 0;
+    while (file.read((char *) &entry, sizeof(entry))) {
+        fileLength++;
+    }
     file.close();
-    return size / sizeof(groupElement);
+    return fileLength;
 }
 
 void createTxtFile(const string &txtFileName) {
@@ -49,17 +53,20 @@ void createTxtFile(const string &txtFileName) {
     file << 25 << endl << 3.6 << endl << 30 << endl << 2 << endl;
     file << 66 << endl << 4.9 << endl << 25 << endl << 6 << endl;
 
-    /*file << 11 << endl << 2.1 << endl << 7 << endl << 1 << endl;
+    file << 11 << endl << 2.1 << endl << 7 << endl << 1 << endl;
     file << 3 << endl << 2.0 << endl << 6 << endl << 3 << endl;
     file << 255 << endl << 2.2 << endl << 5 << endl << 5 << endl;
     file << 666 << endl << 2.3 << endl << 4 << endl << 4 << endl;
-    file << 1232 << endl << 2.9 << endl << 3 << endl << 6;*/
+    file << 1232 << endl << 2.9 << endl << 3 << endl << 6;
     file.close();
 }
 
 void createBinFromTxt(const string &txtFileName, const string &binFileName) {
     ifstream readFile;
     openFile(readFile, txtFileName);
+    fstream writeFile(binFileName, ios::in | ios::out | ios::binary | ios::trunc); //clear file
+    writeFile.close();
+
     groupElement groupElement;
     while (readFile >> groupElement.groupId >> groupElement.medianScore >> groupElement.studentCount
                     >> groupElement.predmetId) {
@@ -95,7 +102,7 @@ groupElement getEntryFromBin(const string &binFileName, int order) {
     return entry;
 }
 
-void deleteEntryByKey(int groupId, const string &binFileName) {
+int deleteEntryByKey(int groupId, const string &binFileName) {
     groupElement entry;
     groupElement lastEntry;
     fstream file;
@@ -112,7 +119,11 @@ void deleteEntryByKey(int groupId, const string &binFileName) {
 
     file.seekg(i * sizeof(groupElement), ios::beg);
     file.write((char *) &lastEntry, sizeof(groupElement));
-    truncate(binFileName.c_str(), sizeWithoutLast);
-    file.close();
-}
 
+    file.seekg(0, std::ios::beg);
+    std::filesystem::resize_file(binFileName, sizeWithoutLast);
+    //truncate(binFileName.c_str(), sizeWithoutLast);
+    file.close();
+
+    return i;
+}

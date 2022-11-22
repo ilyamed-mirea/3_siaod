@@ -16,8 +16,6 @@ const string BIN_FILE_NAME = "bin_hash.bin";
 
 int main() {
     system("chcp 65001");
-    fstream file(BIN_FILE_NAME, ios::in | ios::out | ios::binary | ios::trunc);
-    file.close();
 
     testHeshT(BIN_FILE_NAME,FILE_NAME);
 
