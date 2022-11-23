@@ -85,14 +85,13 @@ int HashTable::rehash() {
 tableNode *HashTable::search(int groupId, int entryId, int params) {
     int i = hashIndex(groupId, this->length);
     tableNode *node = this->rows[i];
-    while (node && node->groupId != groupId && (entryId == -1 || node->entryId != entryId) &&
-           (params == -1 && (node->next->groupId != groupId || this->rows[i]->groupId != groupId)))
-        node = node->next;
+    while (node && node->groupId != groupId && (entryId == -1 || node->entryId != entryId))
+         node = node->next;
     if (params == +1 && node->next != nullptr)
         node = node->next;
     if (params == -1 && node->groupId==groupId)
         return nullptr;
-    if (node->groupId == groupId || params==1 && (entryId == -1 || node->entryId == entryId))
+    if ((node->groupId == groupId || params != 0) && (entryId == -1 || node->entryId == entryId))
         return node;
     else return nullptr;
 }
