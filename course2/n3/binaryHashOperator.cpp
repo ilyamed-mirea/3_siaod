@@ -13,13 +13,43 @@ void fillTableFromBin(HashTable &table, const std::string &binFileName) {
     }
 }
 
+tableNode *findLastElementInTable(HashTable &table) {
+    bool fl = true;
+    int maxEntryId = -1;
+    tableNode *last = new tableNode(0, -1, nullptr);
+    for (int i = 0; i < table.length; i++) {
+        tableNode *currentElement = table.rows[i];
+        while (currentElement) {
+            if (currentElement->entryId > last->entryId) {
+                maxEntryId = currentElement->entryId;
+                last = currentElement;
+            }
+            currentElement = currentElement->next;
+        }
+        delete[] currentElement;
+    }
+    return last;
+}
+
 void removeEntry(HashTable &table, const std::string &binFileName, int groupId) {
+    tableNode *node = findLastElementInTable(table);
     table.print();
     table.remove(groupId);
     int newEntryId = deleteEntryByKey(groupId, binFileName);
-    tableNode *node = table.search(groupId);
     node->entryId = newEntryId;
     table.print();
+}
+
+void addEntry(HashTable &table, const std::string &binFileName) {
+    cout << "write groupId, medianScore, studentCount, predmetId" << endl;
+    int groupId1;
+    double medianScore;
+    int studentCount;
+    int predmetId;
+    cin >> groupId1 >> medianScore >> studentCount >> predmetId;
+    groupElement elem(groupId1, medianScore, studentCount, predmetId);
+    addEntryInBin(binFileName,elem);
+    table.insert(elem, getFileLength(binFileName)-1);
 }
 
 groupElement findInBinByKey(HashTable &table, int groupId) {
@@ -34,7 +64,7 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
     groupElement *elem;
 
     int num;
-    while (1) {
+    while (true) {
         cout << " Operations:" << endl;
         cout << " 1. Create default TXT file" << endl;
         cout << " 2. Create BIN file from TXT file" << endl;
@@ -48,6 +78,7 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
         cout << " 10. Remove from hashTable and BIN" << endl;
         cout << " 11. Find element by key" << endl;
         cout << " 12. Print BIN file" << endl;
+        cout << " 13. Insert in hashTable and BIN" << endl;
         cout << " 0. EXIT" << endl;
         cout << "numPunkt=";
         cin >> num;
@@ -78,9 +109,12 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 break;
             case 6:
                 cout << "write groupId, medianScore, studentCount, predmetId" << endl;
-                int groupId1; double medianScore; int studentCount; int predmetId;
+                int groupId1;
+                double medianScore;
+                int studentCount;
+                int predmetId;
                 cin >> groupId1 >> medianScore >> studentCount >> predmetId;
-                elem = new groupElement(groupId1, medianScore,studentCount,predmetId);
+                elem = new groupElement(groupId1, medianScore, studentCount, predmetId);
                 table.insert(*elem);
                 break;
             case 7:
@@ -105,15 +139,19 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
             case 11:
                 int groupId5;
                 cin >> groupId5;
-                *elem = findInBinByKey(table,groupId5);
+                *elem = findInBinByKey(table, groupId5);
                 cout << elem->groupId << endl;
                 break;
             case 12:
                 printOutBinFile(BIN_FILE_NAME);
                 break;
+            case 13:
+                addEntry(table, BIN_FILE_NAME);
+                break;
             case 0:
                 exit(0);
             default:
+                cout << "unknown number. write 0 to exit." << endl;
                 break;
         }
     }

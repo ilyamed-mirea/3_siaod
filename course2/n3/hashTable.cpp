@@ -85,11 +85,12 @@ int HashTable::rehash() {
 tableNode *HashTable::search(int groupId, int entryId, int params) {
     int i = hashIndex(groupId, this->length);
     tableNode *node = this->rows[i];
-    while (node && node->groupId != groupId && (entryId == -1 || node->entryId != entryId))
-         node = node->next;
-    if (params == +1 && node->next != nullptr)
+    while (node && node->groupId != groupId && (params != -1 || node->next->groupId != groupId) &&
+           (entryId == -1 || node->entryId != entryId))
         node = node->next;
-    if (params == -1 && node->groupId==groupId)
+    if (params == +1)
+        return node->next;
+    if (params == -1 && node->groupId == groupId)
         return nullptr;
     if ((node->groupId == groupId || params != 0) && (entryId == -1 || node->entryId == entryId))
         return node;
@@ -119,7 +120,6 @@ int HashTable::remove(int groupId) {
     if (!prevNode) {
         int i = hashIndex(groupId, this->length);
         this->rows[i] = nextNode;
-    }
-    else prevNode->next = nextNode;
+    } else prevNode->next = nextNode;
     return 0;
 }
