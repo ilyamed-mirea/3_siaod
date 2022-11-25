@@ -4,6 +4,7 @@
 
 #include "binaryHashOperator.h"
 #include "binary.h"
+#include <ctime>
 
 void fillTableFromBin(HashTable &table, const std::string &binFileName) {
     groupElement entry;
@@ -14,14 +15,11 @@ void fillTableFromBin(HashTable &table, const std::string &binFileName) {
 }
 
 tableNode *findLastElementInTable(HashTable &table) {
-    bool fl = true;
-    int maxEntryId = -1;
     tableNode *last = new tableNode(0, -1, nullptr);
     for (int i = 0; i < table.length; i++) {
         tableNode *currentElement = table.rows[i];
         while (currentElement) {
             if (currentElement->entryId > last->entryId) {
-                maxEntryId = currentElement->entryId;
                 last = currentElement;
             }
             currentElement = currentElement->next;
@@ -52,10 +50,28 @@ void addEntry(HashTable &table, const std::string &binFileName) {
     table.insert(elem, getFileLength(binFileName)-1);
 }
 
-groupElement findInBinByKey(HashTable &table, int groupId) {
+groupElement findInBinByKey(HashTable &table, int groupId, const std::string &binFileName) {
     tableNode *foundInTable = table.search(groupId);
-    groupElement res;
+    groupElement res = getEntryFromBin(binFileName, foundInTable->entryId);
     return res;
+}
+
+void milTest(HashTable &table,const std::string &binFileName) {
+    HashTable newTable(1000000);
+    for (int i=0;i<1000000;i++){
+        table.insert(groupElement(i,0,0,0),i);
+    }
+    unsigned int start_time =  clock(); // начальное время
+    tableNode *node = table.search(0);
+    unsigned int end_time = clock(); // конечное время
+    unsigned int search_time1 = end_time - start_time;
+    start_time =  clock(); // начальное время
+    node = table.search(1000000-1);
+    end_time = clock(); // конечное время
+    unsigned int search_time2 = end_time - start_time;
+
+    cout << "first element find in " << search_time1 << "ms" << endl;
+    cout << "last element find in " << search_time2 << "ms" << endl;
 }
 
 int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
@@ -79,6 +95,8 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
         cout << " 11. Find element by key" << endl;
         cout << " 12. Print BIN file" << endl;
         cout << " 13. Insert in hashTable and BIN" << endl;
+        cout << " 14. Get hash" << endl;
+        cout << " 15. Test with 1000000 records" << endl;
         cout << " 0. EXIT" << endl;
         cout << "numPunkt=";
         cin >> num;
@@ -116,6 +134,7 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 cin >> groupId1 >> medianScore >> studentCount >> predmetId;
                 elem = new groupElement(groupId1, medianScore, studentCount, predmetId);
                 table.insert(*elem);
+                cout << "insert with index " << hashIndex(groupId1, table.length) << endl;
                 break;
             case 7:
                 int groupId2;
@@ -139,7 +158,7 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
             case 11:
                 int groupId5;
                 cin >> groupId5;
-                *elem = findInBinByKey(table, groupId5);
+                *elem = findInBinByKey(table, groupId5, BIN_FILE_NAME);
                 cout << elem->groupId << endl;
                 break;
             case 12:
@@ -147,6 +166,16 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 break;
             case 13:
                 addEntry(table, BIN_FILE_NAME);
+                break;
+            case 14:
+                cout << "write groupId" << endl;
+                int groupId6;
+                cin >> groupId6;
+                cout << hashIndex(groupId6, table.length) << endl;
+                break;
+            case 15:
+                cout << "Test with many records" << endl;
+                milTest(table, BIN_FILE_NAME);
                 break;
             case 0:
                 exit(0);

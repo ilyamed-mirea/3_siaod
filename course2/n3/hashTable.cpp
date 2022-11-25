@@ -22,7 +22,6 @@ groupElement::groupElement(int groupId, double medianScore, int studentCount, in
     this->groupId = groupId;
     this->medianScore = medianScore;
     this->studentCount = studentCount;
-    //this->entryId = entryId;
     this->predmetId = predmetId;
 }
 
@@ -42,6 +41,7 @@ HashTable::~HashTable() {
     this->length = 0;
     this->filled = 0;
     rows = nullptr;
+    //удалить все значения листа сначала
 }
 
 //хеш-функция
@@ -114,9 +114,9 @@ int HashTable::print() {
 }
 
 int HashTable::remove(int groupId) {
-    //tableNode *currentNode = this->search(groupId);
     tableNode *prevNode = this->search(groupId, -1, -1);
     tableNode *nextNode = this->search(groupId, -1, +1);
+    //удалить из среднего
     if (!prevNode) {
         int i = hashIndex(groupId, this->length);
         this->rows[i] = nextNode;

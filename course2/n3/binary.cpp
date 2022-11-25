@@ -122,7 +122,6 @@ int deleteEntryByKey(int groupId, const string &binFileName) {
 
     file.seekg(0, std::ios::beg);
     std::filesystem::resize_file(binFileName, sizeWithoutLast);
-    //truncate(binFileName.c_str(), sizeWithoutLast);
     file.close();
 
     return i;

@@ -1,9 +1,5 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
 #include <string>
 #include <unistd.h>
-#include <cmath>
 
 #include "hashTable.cpp"
 #include "binary.cpp"
