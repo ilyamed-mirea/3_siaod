@@ -9,26 +9,29 @@ using namespace std;
 
 int main() {
     Tree tree;
-    tree.insert(5);
-    tree.insert(3);
-    tree.insert(7);
-    tree.insert(2);
-    tree.insert(4);
-    tree.insert(6);
-    tree.insert(8);
-    tree.insert(1);
-    tree.insert(9);
-    tree.insert(10);
+    /*tree.insert(5, tree.head);
+    tree.insert(3, tree.head);
+    tree.insert(7, tree.head);
+    tree.insert(2, tree.head);
+    tree.insert(4,  tree.head);
+    tree.insert(6, tree.head);
+    tree.insert(8, tree.head);
+    tree.insert(1, tree.head);
+    tree.insert(9, tree.head);
+    tree.insert(10, tree.head);*/
 
-    /*tree.insert(11);
-    tree.insert(22);
-    tree.insert(10);
-    tree.insert(2);
-    tree.insert(6);
-    tree.insert(1);
+    tree.insert(12, tree.head);
+    tree.insert(10, tree.head);
+    tree.insert(25, tree.head);
+    tree.insert(8, tree.head);
+    tree.insert(5, tree.head);
+    tree.insert(22, tree.head);
+    tree.insert(28, tree.head);
+    tree.insert(14, tree.head);
+    tree.insert(44, tree.head);
     tree.printTree("", tree.head, false);
 
-    tree.remove(2);*/
+    tree.remove(2, tree.head);
 
     tree.printTree("", tree.head, false);
 

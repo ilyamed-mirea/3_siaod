@@ -18,8 +18,8 @@ struct Node {
 struct Tree {
     Node* head;
 
-    void insert(int newLeafData, Node *parentNode = nullptr, int side = 0);
-    void remove(int leafToRemoveData, Node *parentNode = nullptr, int side = 0);
+    void insert(int newLeafData, Node *&parentNode);
+    void remove(int leafToRemoveData, Node *&parentNode, int side = 0);
     Node* find(int leafData);
     void removeMax();
     int findSum(Node* currentNode);

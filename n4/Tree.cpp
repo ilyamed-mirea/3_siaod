@@ -7,40 +7,26 @@
 
 using namespace std;
 
-void Tree::insert(int newLeafData, Node *parentNode, int side) {
-    if (head == nullptr) {
-        head = new Node(newLeafData);
-        return;
-    }
-    if (parentNode == nullptr) {
-        parentNode = head;
-    }
-    if (newLeafData < parentNode->data) {
-        if (parentNode->left == nullptr) {
-            parentNode->left = new Node(newLeafData);
-            return;
-        }
-        insert(newLeafData, parentNode->left, 0);
+void Tree::insert(int newLeafData, Node *&parentNode) {
+    if (!parentNode) {
+        parentNode = new Node(newLeafData);
+    } else if (newLeafData < parentNode->data) {
+        insert(newLeafData, parentNode->left);
     } else if (newLeafData > parentNode->data) {
-        if (parentNode->right == nullptr) {
-            parentNode->right = new Node(newLeafData);
-            return;
-        }
-        insert(newLeafData, parentNode->right, 1);
-    } /*else { //newLeafData == parentNode->data
-        parentNode->key = newLeafKey; //?
-    }*/
+        insert(newLeafData, parentNode->right);
+    }
 }
 
-void Tree::remove(int leafToRemoveData, Node *parentNode, int side) {
-    if (head == nullptr) {
+void Tree::remove(int leafToRemoveData, Node *&parentNode, int side) {
+    if (parentNode == nullptr) {
         cout << "Tree is empty" << endl;
         return;
     }
-    if (parentNode == nullptr) {
-        parentNode = head;
-    }
     Node *currentNode = side > 0 ? parentNode->right : side < 0 ? parentNode->left : this->head;
+    if (currentNode->data!=leafToRemoveData && (!currentNode->right || currentNode->right->data < leafToRemoveData) && (!currentNode->left || currentNode->left->data > leafToRemoveData)) {
+        cout << "No such element" << endl;
+        return;
+    }
     if (leafToRemoveData > currentNode->data)
         this->remove(leafToRemoveData, currentNode, +1);
     else if (leafToRemoveData < currentNode->data)
@@ -87,7 +73,7 @@ void Tree::removeMax() {
     while (currentNode->right) {
         currentNode = currentNode->right;
     }
-    this->remove(currentNode->data);
+    this->remove(currentNode->data, this->head);
 }
 
 int Tree::findSum(Node *currentNode) {
