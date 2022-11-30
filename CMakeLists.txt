@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
-project(siaod)
+project(3_siaod)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(siaod course2/n3/main.cpp)
+add_executable(3_siaod n4/main.cpp)
 
 # oop/main.cpp
