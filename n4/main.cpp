@@ -8,6 +8,7 @@
 using namespace std;
 
 int main() {
+    return;
     Tree tree;
     /*tree.insert(5, tree.head);
     tree.insert(3, tree.head);
