@@ -22,15 +22,17 @@ int main() {
     tree.printTree();
 
     cout<<"Tree after removing 300:"<<endl;
-    removeEntry(tree, BIN_FILE_NAME, 300);
+    removeEntry(tree, BIN_FILE_NAME, 301);
     tree.printTree();
 
     cout<<"Tree after adding 25:"<<endl;
     addEntry(tree, BIN_FILE_NAME, 25);
     tree.printTree();
 
-    cout<<"Searching for 1232:"<<endl;
-    groupElement found = findInBinByKey(tree, 1232, BIN_FILE_NAME);
+    int searchKey;
+    cin >> searchKey;
+    cout<<"Searching for: "<<searchKey<<endl;
+    groupElement found = findInBinByKey(tree, searchKey, BIN_FILE_NAME);
     cout << "found " << found.groupId << ": " << found.studentCount << " " << found.medianScore << endl;
 
     return 0;

@@ -20,7 +20,7 @@ struct Tree {
 
     void insert(int newLeafKey, int newLeafData, Node *&parentNode);
     int insert(int newLeafKey, int newLeafData);
-    void remove(int leafToRemoveKey, Node *&parentNode);
+    void remove(int leafToRemoveKey, Node *&parentNode, int side = 0);
     int remove(int leafToRemoveKey);
     Node* find(int leafData);
     Node* findLast(Node *currentNode, Node* maxNode);

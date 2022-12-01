@@ -73,7 +73,7 @@ void createTxtFile(const string &txtFileName) {
     //int groupId; double medianScore; int studentCount;
     file << 12 << endl << 4.2 << endl << 28 << endl ;
     file << 30 << endl << 3 << endl << 15 << endl;
-    file << 300 << endl << 3.6 << endl << 30 << endl;
+    file << 301 << endl << 3.6 << endl << 30 << endl;
     file << 112 << endl << 4.2 << endl << 28 << endl ;
     file << 66 << endl << 4.9 << endl << 25 << endl; // << endl
 
