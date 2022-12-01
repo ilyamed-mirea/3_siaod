@@ -20,8 +20,8 @@ struct Tree {
 
     void insert(int newLeafKey, int newLeafData, Node *&parentNode);
     int insert(int newLeafKey, int newLeafData);
-    void remove(int leafToRemoveKey, Node *&parentNode, int side = 0);
-    int remove(int leafToRemoveKey, int side = 0);
+    void remove(int leafToRemoveKey, Node *&parentNode);
+    int remove(int leafToRemoveKey);
     Node* find(int leafData);
     Node* findLast(Node *currentNode, Node* maxNode);
     void printTree(const std::string& prefix, Node *currentNode, bool isLeft=false);

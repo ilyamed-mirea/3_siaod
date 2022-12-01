@@ -17,27 +17,32 @@ void Tree::insert(int newLeafKey, int newLeafData, Node *&parentNode) {
     }
 }
 
-void Tree::remove(int leafToRemoveKey, Node *&parentNode, int side) {
+
+void del(Node *&a, Node *&b) {
+    if (a->right)
+        del(a->right, b);
+    else {
+        b->key = a->key;
+        b = a;
+        a = a->left;
+    }
+}
+
+void Tree::remove(int leafToRemoveKey, Node *&parentNode) {
     if (parentNode == nullptr) {
         cout << "Tree is empty" << endl;
         return;
     }
-    Node *currentNode = side > 0 ? parentNode->right : side < 0 ? parentNode->left : this->head;
-    if (currentNode->key != leafToRemoveKey && (!currentNode->right || currentNode->right->key < leafToRemoveKey) &&
-        (!currentNode->left || currentNode->left->key > leafToRemoveKey)) {
-        cout << "No such element" << endl;
-        return;
-    }
-    if (leafToRemoveKey > currentNode->key)
-        this->remove(leafToRemoveKey, currentNode, +1);
-    else if (leafToRemoveKey < currentNode->key)
-        this->remove(leafToRemoveKey, currentNode, -1);
-    else if (leafToRemoveKey == currentNode->key) { // currentNode is the node to remove
-        if (!currentNode->left && !currentNode->right) { // currentNode has no children
-            delete currentNode;
-            (side > 0 ? parentNode->right : side == 0 ? this->head : parentNode->left) = nullptr;
-        } else if (!currentNode->left || !currentNode->right) { // currentNode has one child
-            Node *children = currentNode->left != nullptr ? currentNode->left : currentNode->right;
+    Node *currentNode;
+    if (leafToRemoveKey > parentNode->key)
+        this->remove(leafToRemoveKey, parentNode->right);
+    else if (leafToRemoveKey < parentNode->key)
+        this->remove(leafToRemoveKey, parentNode->left);
+    else if (leafToRemoveKey == parentNode->key) { // currentNode is the node to remove
+        currentNode = parentNode;
+        bool hasOneChild = (currentNode->right && !currentNode->left) || (currentNode->left && !currentNode->right);
+        if (hasOneChild) { // currentNode has one child
+            Node *children = currentNode->left ? currentNode->left : currentNode->right;
             currentNode->key = children->key;
             currentNode->right = children->right;
             currentNode->left = children->left;
@@ -47,17 +52,15 @@ void Tree::remove(int leafToRemoveKey, Node *&parentNode, int side) {
                 currentNode->key = currentNode->right->key;
                 currentNode->right = currentNode->right->right;
             } else {
-                currentNode = parentNode->right;
-                while (currentNode->left != nullptr) { // find the leftmost leaf of the right subtree
-                    currentNode = currentNode->left;
-                }
-                int temp = currentNode->key;
-                remove(currentNode->key, head, 0);
-                currentNode->key = temp;
+                //find max in right subtree
+                del(currentNode->left, currentNode);
+
             }
         }
     }
+    delete currentNode;
 }
+
 
 Node *Tree::find(int leafKey) {
     Node *currentNode = this->head;
@@ -96,8 +99,8 @@ int Tree::insert(int newLeafKey, int newLeafData) {
     return 0;
 }
 
-int Tree::remove(int leafToRemoveKey, int side) {
-    remove(leafToRemoveKey, this->head, side);
+int Tree::remove(int leafToRemoveKey) {
+    remove(leafToRemoveKey, this->head);
     return 0;
 }
 
