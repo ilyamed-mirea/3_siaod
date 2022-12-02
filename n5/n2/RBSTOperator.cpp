@@ -29,7 +29,13 @@ void removeEntry(Tree &tree, const std::string &binFileName, int groupId) {
 //void findInTree(Tree &tree, std::string binFileName);
 
 groupElement findInBinByKey(Tree &tree, int groupId, const std::string &binFileName) {
-    int order = tree.find(groupId)->data;
+    Node* foundInTree = tree.find(groupId);
+    int order;
+    if (!foundInTree) {
+        cout << "No such element" << endl;
+        return groupElement();
+    }
+    else order=foundInTree->data;
     return getEntryFromBin(binFileName, order);
 }
 
