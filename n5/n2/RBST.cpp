@@ -7,29 +7,29 @@
 
 using namespace std;
 
-Node *Tree::insert(int newLeafKey, int newLeafData, Node *&parentNode) {
+RBSTNode *RBSTTRee::insert(int newLeafKey, int newLeafData, RBSTNode *&parentNode) {
     if (!parentNode) {
-        parentNode = parentNode == head ? new Node(newLeafData, newLeafKey, nullptr, BLACK) : new Node(newLeafData,
+        parentNode = parentNode == head ? new RBSTNode(newLeafData, newLeafKey, nullptr, BLACK) : new RBSTNode(newLeafData,
                                                                                                        newLeafKey);
         return parentNode;
     } else if (newLeafKey < parentNode->key) {
         if (parentNode->left)
             return insert(newLeafKey, newLeafData, parentNode->left);
         else {
-            parentNode->left = new Node(newLeafData, newLeafKey, parentNode);
+            parentNode->left = new RBSTNode(newLeafData, newLeafKey, parentNode);
             return parentNode->left;
         }
     } else if (newLeafKey > parentNode->key) {
         if (parentNode->right)
             return insert(newLeafKey, newLeafData, parentNode->right);
         else {
-            parentNode->right = new Node(newLeafData, newLeafKey, parentNode);
+            parentNode->right = new RBSTNode(newLeafData, newLeafKey, parentNode);
             return parentNode->right;
         }
     }
 }
 
-Node* Tree::remove(int leafToRemoveKey, Node *&currentNode) {
+RBSTNode* RBSTTRee::remove(int leafToRemoveKey, RBSTNode *&currentNode) {
     if (currentNode == nullptr) {
         cout << "Tree is empty" << endl;
         return nullptr;
@@ -45,12 +45,12 @@ Node* Tree::remove(int leafToRemoveKey, Node *&currentNode) {
         return this->remove(leafToRemoveKey, currentNode->left);
     else if (leafToRemoveKey == currentNode->key) { // currentNode is the node to remove
         if (!currentNode->left && !currentNode->right) { // currentNode has no children
-            Node *&parentNode = currentNode->parent;
+            RBSTNode *&parentNode = currentNode->parent;
             (currentNode->key==parentNode->left->key ? parentNode->left : parentNode->right) = nullptr;
             delete currentNode;
             return parentNode;
         } else if (!currentNode->left || !currentNode->right) { // currentNode has one child
-            Node *&children = currentNode->left ? currentNode->left : currentNode->right;
+            RBSTNode *&children = currentNode->left ? currentNode->left : currentNode->right;
             currentNode->data = children->data;
             currentNode->key = children->key;
             currentNode->right = children->right;
@@ -64,7 +64,7 @@ Node* Tree::remove(int leafToRemoveKey, Node *&currentNode) {
                 currentNode->right = currentNode->right->right;
                 return currentNode;
             } else {
-                Node *leftmost = currentNode->right;
+                RBSTNode *leftmost = currentNode->right;
                 while (leftmost->left != nullptr) { // find the leftmost leaf of the right subtree
                     leftmost = leftmost->left;
                 }
@@ -81,8 +81,8 @@ Node* Tree::remove(int leafToRemoveKey, Node *&currentNode) {
 }
 
 
-Node *Tree::find(int leafKey) {
-    Node *currentNode = this->head;
+RBSTNode *RBSTTRee::find(int leafKey) {
+    RBSTNode *currentNode = this->head;
     while (currentNode) {
         if (leafKey == currentNode->key) return currentNode;
         else if (leafKey > currentNode->key) currentNode = currentNode->right;
@@ -91,7 +91,7 @@ Node *Tree::find(int leafKey) {
     return nullptr;
 }
 
-void Tree::printTree(const std::string &prefix, Node *currentNode, bool isLeft) {
+void RBSTTRee::printTree(const std::string &prefix, RBSTNode *currentNode, bool isLeft) {
     if (currentNode != nullptr) {
         std::cout << prefix;
         std::cout << (isLeft ? "R--" : "L--");
@@ -103,26 +103,26 @@ void Tree::printTree(const std::string &prefix, Node *currentNode, bool isLeft) 
     }
 }
 
-int Tree::printTree() {
+int RBSTTRee::printTree() {
     this->printTree("", this->head, false);
     return 0;
 }
 
-Tree::Tree(Node *head) {
+RBSTTRee::RBSTTRee(RBSTNode *head) {
     this->head = head;
     this->rotatingCount = 0;
 }
 
-int Tree::insert(int newLeafKey, int newLeafData) {
-    Node *node = this->insert(newLeafKey, newLeafData, this->head);
+int RBSTTRee::insert(int newLeafKey, int newLeafData) {
+    RBSTNode *node = this->insert(newLeafKey, newLeafData, this->head);
     this->correctTree(node);
     return 0;
 }
 
-void Tree::correctTree(Node *node) {
+void RBSTTRee::correctTree(RBSTNode *node) {
     while (node != head && node->parent->color == RED) {
         if (node->parent == node->parent->parent->left) {
-            Node *uncle = node->parent->parent->right;
+            RBSTNode *uncle = node->parent->parent->right;
             if (uncle && uncle->color == RED) {
                 uncle->color = BLACK;
                 node->parent->color = BLACK;
@@ -138,7 +138,7 @@ void Tree::correctTree(Node *node) {
                 this->rotateRight(node->parent->parent);
             }
         } else {
-            Node *uncle = node->parent->parent->left;
+            RBSTNode *uncle = node->parent->parent->left;
             if (uncle && uncle->color == RED) {
                 uncle->color = BLACK;
                 node->parent->color = BLACK;
@@ -158,18 +158,18 @@ void Tree::correctTree(Node *node) {
     head->color = BLACK; // root is always black
 }
 
-int Tree::remove(int leafToRemoveKey) {
-    Node *rem = remove(leafToRemoveKey, this->head);
+int RBSTTRee::remove(int leafToRemoveKey) {
+    RBSTNode *rem = remove(leafToRemoveKey, this->head);
     correctTree(rem);
     return 0;
 }
 
-Node *Tree::findLast(Node *currentNode, Node *maxNode) {
+RBSTNode *RBSTTRee::findLast(RBSTNode *currentNode, RBSTNode *maxNode) {
     //find node with maximum data
     if (!currentNode) return maxNode;
     else if (!currentNode->left && !currentNode->right) return currentNode;
-    Node *maxLeft = this->findLast(currentNode->left, maxNode);
-    Node *maxRight = this->findLast(currentNode->right, maxNode);
+    RBSTNode *maxLeft = this->findLast(currentNode->left, maxNode);
+    RBSTNode *maxRight = this->findLast(currentNode->right, maxNode);
     if (maxLeft->data > maxRight->data) {
         if (maxLeft->data > maxNode->data) {
             maxNode = maxLeft;
@@ -186,8 +186,8 @@ Node *Tree::findLast(Node *currentNode, Node *maxNode) {
     return maxNode;
 }
 
-void Tree::rotateLeft(Node *node) {
-    Node *right = node->right;
+void RBSTTRee::rotateLeft(RBSTNode *node) {
+    RBSTNode *right = node->right;
     node->right = right->left;
     if (right->left != nullptr) {
         right->left->parent = node;
@@ -205,8 +205,8 @@ void Tree::rotateLeft(Node *node) {
     this->rotatingCount++;
 }
 
-void Tree::rotateRight(Node *node) {
-    Node *left = node->left;
+void RBSTTRee::rotateRight(RBSTNode *node) {
+    RBSTNode *left = node->left;
     node->left = left->right;
     if (left->right != nullptr) {
         left->right->parent = node;
@@ -224,7 +224,7 @@ void Tree::rotateRight(Node *node) {
     this->rotatingCount++;
 }
 
-Node::Node(int newLeafData, int newLeafKey, Node *parent, Color newLeafColor) {
+RBSTNode::RBSTNode(int newLeafData, int newLeafKey, RBSTNode *parent, Color newLeafColor) {
     this->key = newLeafKey;
     this->data = newLeafData;
     this->left = nullptr;

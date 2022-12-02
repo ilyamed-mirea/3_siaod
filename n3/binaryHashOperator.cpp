@@ -39,13 +39,12 @@ void removeEntry(HashTable &table, const std::string &binFileName, int groupId) 
 }
 
 void addEntry(HashTable &table, const std::string &binFileName) {
-    cout << "write groupId, medianScore, studentCount, predmetId" << endl;
+    cout << "write groupId, medianScore, studentCount" << endl;
     int groupId1;
     double medianScore;
     int studentCount;
-    int predmetId;
-    cin >> groupId1 >> medianScore >> studentCount >> predmetId;
-    groupElement elem(groupId1, medianScore, studentCount, predmetId);
+    cin >> groupId1 >> medianScore >> studentCount;
+    groupElement elem(groupId1, medianScore, studentCount);
     addEntryInBin(binFileName,elem);
     table.insert(elem, getFileLength(binFileName)-1);
 }
@@ -126,13 +125,12 @@ int testHeshT(const std::string &BIN_FILE_NAME, const std::string &FILE_NAME) {
                 table.print();
                 break;
             case 6:
-                cout << "write groupId, medianScore, studentCount, predmetId" << endl;
+                cout << "write groupId, medianScore, studentCount" << endl;
                 int groupId1;
                 double medianScore;
                 int studentCount;
-                int predmetId;
-                cin >> groupId1 >> medianScore >> studentCount >> predmetId;
-                elem = new groupElement(groupId1, medianScore, studentCount, predmetId);
+                cin >> groupId1 >> medianScore >> studentCount;
+                elem = new groupElement(groupId1, medianScore, studentCount);
                 table.insert(*elem);
                 cout << "insert with index " << hashIndex(groupId1, table.length) << endl;
                 break;

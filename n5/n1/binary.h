@@ -2,20 +2,8 @@
 #define BINARYT_H
 
 #include "iostream"
+#include "../../base/groupElement.h"
 using namespace std;
-
-struct groupElement {
-    int groupId;
-    double medianScore;
-    int studentCount;
-
-    groupElement();
-
-    groupElement(int groupId);
-
-    groupElement(int groupId, double medianScore, int studentCount);
-};
-
 
 template<class fileStream>
 void openFile(fileStream &file, std::string FILE_NAME, const std::string &dir = "in", const std::string &type = "txt");

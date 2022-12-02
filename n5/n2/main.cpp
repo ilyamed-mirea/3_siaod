@@ -11,15 +11,19 @@ const string FILE_NAME = "tree.txt";
 const string BIN_FILE_NAME = "bin_tree.bin";
 
 int main() {
-    Tree tree;
+    RBSTTRee tree;
 
     createTxtFile(FILE_NAME);
     createBinFromTxt(FILE_NAME, BIN_FILE_NAME);
 //    printOutBinFile(BIN_FILE_NAME);
     fillTreeFromBin(tree, BIN_FILE_NAME);
 
+
     cout << "Tree:" << endl;
     tree.printTree();
+
+    int rot = countRotating();
+    cout << "Rotating: " << rot << endl;
 
     cout << "Tree after removing 56:" << endl;
     removeEntry(tree, BIN_FILE_NAME, 56);

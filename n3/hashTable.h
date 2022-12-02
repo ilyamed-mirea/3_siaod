@@ -4,19 +4,7 @@
 
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
-
-struct groupElement {
-    int groupId;
-    double medianScore;
-    int studentCount;
-    int predmetId;
-
-    groupElement();
-
-    groupElement(int groupId);
-
-    groupElement(int groupId, double medianScore, int studentCount, int predmetId);
-};
+#include "binary.h"
 
 struct tableNode {
     int groupId;

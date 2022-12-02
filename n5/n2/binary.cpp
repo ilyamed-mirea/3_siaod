@@ -7,25 +7,6 @@ using namespace std;
 
 #include "binary.h"
 
-groupElement::groupElement() {
-    srand(time(nullptr));
-    groupId = rand() % 100;
-    medianScore = -1;
-    studentCount = -1;
-}
-
-groupElement::groupElement(int groupId) {
-    this->groupId = groupId;
-    this->medianScore = -1;
-    this->studentCount = -1;
-}
-
-groupElement::groupElement(int groupId, double medianScore, int studentCount) {
-    this->groupId = groupId;
-    this->medianScore = medianScore;
-    this->studentCount = studentCount;
-}
-
 
 template<class fileStream>
 void openFile(fileStream &file, string FILE_NAME, const string &dir, const string &type) {

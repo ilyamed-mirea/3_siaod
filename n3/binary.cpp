@@ -5,7 +5,6 @@
 
 using namespace std;
 
-#include "hashTable.h"
 #include "binary.h"
 
 template<class fileStream>
@@ -46,18 +45,18 @@ void createTxtFile(const string &txtFileName) {
     //cout << "write 0 for default values or 1 for manual input?" << endl;
     //int ind;
     //cin >> ind;
-    //int groupId; double medianScore; int studentCount; int predmetId;
-    file << 12 << endl << 4.2 << endl << 28 << endl << 1 << endl;
-    file << 14 << endl << 3 << endl << 15 << endl << 3 << endl;
-    file << 112 << endl << 4.2 << endl << 28 << endl << 2 << endl;
-    file << 25 << endl << 3.6 << endl << 30 << endl << 2 << endl;
-    file << 66 << endl << 4.9 << endl << 25 << endl << 6 << endl;
+    //int groupId; double medianScore; int studentCount;
+    file << 12 << endl << 4.2 << endl << 28 << endl;
+    file << 14 << endl << 3 << endl << 15 << endl;
+    file << 112 << endl << 4.2 << endl << 28 << endl;
+    file << 25 << endl << 3.6 << endl << 30 << endl;
+    file << 66 << endl << 4.9 << endl << 25 << endl;
 
-    file << 11 << endl << 2.1 << endl << 7 << endl << 1 << endl;
-    file << 3 << endl << 2.0 << endl << 6 << endl << 3 << endl;
-    file << 255 << endl << 2.2 << endl << 5 << endl << 5 << endl;
-    file << 666 << endl << 2.3 << endl << 4 << endl << 4 << endl;
-    file << 1232 << endl << 2.9 << endl << 3 << endl << 6;
+    file << 11 << endl << 2.1 << endl << 7 << endl;
+    file << 3 << endl << 2.0 << endl << 6 << endl;
+    file << 255 << endl << 2.2 << endl << 5 << endl;
+    file << 666 << endl << 2.3 << endl << 4 << endl ;
+    file << 1232 << endl << 2.9 << endl << 3;
     file.close();
 }
 
@@ -68,8 +67,7 @@ void createBinFromTxt(const string &txtFileName, const string &binFileName) {
     writeFile.close();
 
     groupElement groupElement;
-    while (readFile >> groupElement.groupId >> groupElement.medianScore >> groupElement.studentCount
-                    >> groupElement.predmetId) {
+    while (readFile >> groupElement.groupId >> groupElement.medianScore >> groupElement.studentCount) {
         addEntryInBin(binFileName, groupElement);
     }
     readFile.close();

@@ -8,7 +8,6 @@
 
 struct Node {
     int data;
-    //int key;
     Node* left;
     Node* right;
 

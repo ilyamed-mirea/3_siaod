@@ -1,6 +1,10 @@
-#ifndef BINARY_H
-#define BINARY_H
+#ifndef BINARY3_H
+#define BINARY3_H
 
+#include "iostream"
+#include "../base/groupElement.h"
+
+using namespace std;
 template<class fileStream>
 void openFile(fileStream &file, std::string FILE_NAME, const std::string &dir = "in", const std::string &type = "txt");
 
@@ -18,4 +22,4 @@ int deleteEntryByKey(int groupId, const string &binFileName);
 
 int getFileLength(const std::string &binFileName);
 
-#endif //BINARY_H
+#endif //BINARY3_H

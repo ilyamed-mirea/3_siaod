@@ -11,42 +11,42 @@ enum Color {
     RED, BLACK
 };
 
-struct Node {
+struct RBSTNode {
     int key; //groupId
     int data; //number of entry in file
     Color color;
-    Node *left, *right, *parent;
+    RBSTNode *left, *right, *parent;
 
-    Node(int newLeafData = 0, int newLeafKey = 0, Node *parent = nullptr, Color newLeafColor = RED);
+    RBSTNode(int newLeafData = 0, int newLeafKey = 0, RBSTNode *parent = nullptr, Color newLeafColor = RED);
 };
 
-struct Tree {
-    Node *head;
+struct RBSTTRee {
+    RBSTNode *head;
     int rotatingCount;
 
-    Node* insert(int newLeafKey, int newLeafData, Node *&parentNode);
+    RBSTNode* insert(int newLeafKey, int newLeafData, RBSTNode *&parentNode);
 
     int insert(int newLeafKey, int newLeafData);
 
-    Node* remove(int leafToRemoveKey, Node *&currentNode);
+    RBSTNode* remove(int leafToRemoveKey, RBSTNode *&currentNode);
 
     int remove(int leafToRemoveKey);
 
-    Node *find(int leafData);
+    RBSTNode *find(int leafKey);
 
-    Node *findLast(Node *currentNode, Node *maxNode);
+    RBSTNode *findLast(RBSTNode *currentNode, RBSTNode *maxNode);
 
-    void printTree(const std::string &prefix, Node *currentNode, bool isLeft = false);
+    void printTree(const std::string &prefix, RBSTNode *currentNode, bool isLeft = false);
 
     int printTree();
 
-    void correctTree(Node *node);
+    void correctTree(RBSTNode *node);
 
-    void rotateLeft(Node *node);
+    void rotateLeft(RBSTNode *node);
 
-    void rotateRight(Node *node);
+    void rotateRight(RBSTNode *node);
 
-    Tree(Node *head = nullptr);
+    RBSTTRee(RBSTNode *head = nullptr);
 };
 
 #endif //SIAOD_RBST_H

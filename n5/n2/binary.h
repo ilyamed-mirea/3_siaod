@@ -2,19 +2,7 @@
 #define BINARYRB_H
 
 using namespace std;
-
-struct groupElement {
-    int groupId;
-    double medianScore;
-    int studentCount;
-
-    groupElement();
-
-    groupElement(int groupId);
-
-    groupElement(int groupId, double medianScore, int studentCount);
-};
-
+#include "../../base/groupElement.h"
 
 template<class fileStream>
 void openFile(fileStream &file, std::string FILE_NAME, const std::string &dir = "in", const std::string &type = "txt");
