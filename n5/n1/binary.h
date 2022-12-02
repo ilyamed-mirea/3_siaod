@@ -1,6 +1,9 @@
 #ifndef BINARYT_H
 #define BINARYT_H
 
+#include "iostream"
+using namespace std;
+
 struct groupElement {
     int groupId;
     double medianScore;

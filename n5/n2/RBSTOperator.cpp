@@ -6,6 +6,8 @@
 
 using namespace std;
 
+//tree - дерево, в которое будем добавлять элементы
+//binFileName - имя файла, из которого будем считывать элементы
 void fillTreeFromBin(Tree &tree, std::string binFileName) {
     int binFileLength = getFileLength(binFileName);
     ifstream binFile(binFileName);

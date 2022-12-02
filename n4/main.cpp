@@ -8,7 +8,6 @@
 using namespace std;
 
 int main() {
-    return;
     Tree tree;
     /*tree.insert(5, tree.head);
     tree.insert(3, tree.head);
@@ -20,16 +19,17 @@ int main() {
     tree.insert(1, tree.head);
     tree.insert(9, tree.head);
     tree.insert(10, tree.head);*/
-
+    tree.insert(6, tree.head);
     tree.insert(12, tree.head);
+    tree.insert(15, tree.head);
+    tree.insert(4, tree.head);
     tree.insert(10, tree.head);
-    tree.insert(25, tree.head);
-    tree.insert(8, tree.head);
-    tree.insert(5, tree.head);
-    tree.insert(22, tree.head);
-    tree.insert(28, tree.head);
+    tree.insert(2, tree.head);
+    tree.insert(18, tree.head);
+    tree.insert(7, tree.head);
     tree.insert(14, tree.head);
-    tree.insert(44, tree.head);
+    tree.insert(21, tree.head);
+    tree.insert(5, tree.head);
     tree.printTree("", tree.head, false);
 
     tree.remove(2, tree.head);

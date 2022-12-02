@@ -21,7 +21,7 @@ int main() {
     cout<<"Tree:"<<endl;
     tree.printTree();
 
-    cout<<"Tree after removing 300:"<<endl;
+    cout<<"Tree after removing 301:"<<endl;
     removeEntry(tree, BIN_FILE_NAME, 301);
     tree.printTree();
 
