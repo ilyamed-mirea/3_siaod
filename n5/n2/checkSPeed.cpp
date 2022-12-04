@@ -25,21 +25,25 @@ int checkSPeed() {
     random_shuffle(&array[0], &array[maxNumber]);
 
     for (int i = 10; i <= maxNumber; i *= 10) {
-        int *currentArray = new int[i];
-        for (int j = 0; j < i; j++) {
-            currentArray[j] = array[j];
+        double hashSpeed =0;
+        double binaryTreeSpeed=0;
+        double rbstSpeed=0;
+        for (int k=0;k<4;k++) {
+            int *currentArray = new int[i];
+            for (int j = 0; j < i; j++) {
+                currentArray[j] = array[j];
+            }
+            srand(time(nullptr));
+            int key = currentArray[rand() % i];
+            hashSpeed += checkHashSpeed(currentArray, key, i);
+            binaryTreeSpeed += checkBinaryTreeSpeed(currentArray, key, i);
+            rbstSpeed += checkRBSTSpeed(currentArray, key, i);
         }
-        srand(time(nullptr));
-        int key = currentArray[rand() % i];
-        cout << "Searching for key: " << key << endl;
-        cout << "For " << i << " elements:" << endl;
-        double hashSpeed = checkHashSpeed(currentArray, key, i);
-        cout << "Hash: " << hashSpeed << " ns" << endl;
-        double binaryTreeSpeed = checkBinaryTreeSpeed(currentArray, key, i);
-        cout << "Binary tree: " << binaryTreeSpeed << " ns" << endl;
-        double rbstSpeed = checkRBSTSpeed(currentArray, key, i);
-        cout << "RBST: " << rbstSpeed << " ns" << endl;
-        cout << "-------------------------" << endl;
+        cout << "Searching for key: " << " in " << i << " elements:" << endl;
+        cout << "Hash: " << (int)hashSpeed/4 << " ns" << endl;
+        cout << "Binary tree: " << (int)binaryTreeSpeed/4 << " ns" << endl;
+        cout << "RBST: " << (int)rbstSpeed/4 << " ns" << endl;
+        cout << "-------------------------";
         cout << endl;
     }
     return 0;
