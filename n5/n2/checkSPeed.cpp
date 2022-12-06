@@ -25,10 +25,10 @@ int checkSPeed() {
     random_shuffle(&array[0], &array[maxNumber]);
 
     for (int i = 10; i <= maxNumber; i *= 10) {
-        double hashSpeed =0;
-        double binaryTreeSpeed=0;
-        double rbstSpeed=0;
-        for (int k=0;k<4;k++) {
+        double hashSpeed = 0;
+        double binaryTreeSpeed = 0;
+        double rbstSpeed = 0;
+        for (int k = 0; k < 4; k++) {
             int *currentArray = new int[i];
             for (int j = 0; j < i; j++) {
                 currentArray[j] = array[j];
@@ -39,11 +39,11 @@ int checkSPeed() {
             binaryTreeSpeed += checkBinaryTreeSpeed(currentArray, key, i);
             rbstSpeed += checkRBSTSpeed(currentArray, key, i);
         }
-        cout << "Searching for key: " << " in " << i << " elements:" << endl;
-        cout << "Hash: " << (int)hashSpeed/4 << " ns" << endl;
-        cout << "Binary tree: " << (int)binaryTreeSpeed/4 << " ns" << endl;
-        cout << "RBST: " << (int)rbstSpeed/4 << " ns" << endl;
-        cout << "-------------------------";
+        cout << i << " elements:" << endl;
+        cout << "Search in hash: " << (int) hashSpeed / 4 << " ns" << endl;
+        cout << "Search in binary tree: " << (int) binaryTreeSpeed / 4 << " ns" << endl;
+        cout << "Search in RB tree: " << (int) rbstSpeed / 4 << " ns" << endl;
+
         cout << endl;
     }
     return 0;
@@ -55,20 +55,20 @@ double checkRBSTSpeed(int *array, int key, int i) {
         tree.insert(array[j], array[j]);
     }
     auto start = std::chrono::high_resolution_clock::now();
-    RBSTNode* found = tree.find(key);
+    RBSTNode *found = tree.find(key);
     auto end = std::chrono::high_resolution_clock::now();
-    return chrono::duration <double, nano> (end-start).count();
+    return chrono::duration<double, nano>(end - start).count();
 }
 
 double checkBinaryTreeSpeed(int *array, int key, int i) {
     Tree tree;
     for (int j = 0; j < i; j++) {
-        tree.insert(array[j],j);
+        tree.insert(array[j], j);
     }
     auto start = std::chrono::high_resolution_clock::now();
-    Node* found = tree.find(key);
+    Node *found = tree.find(key);
     auto end = std::chrono::high_resolution_clock::now();
-    return chrono::duration <double, nano> (end-start).count();
+    return chrono::duration<double, nano>(end - start).count();
 }
 
 double checkHashSpeed(int *array, int key, int i) {
@@ -80,7 +80,7 @@ double checkHashSpeed(int *array, int key, int i) {
     auto start = std::chrono::high_resolution_clock::now();
     tableNode *found = hashTable.search(key, -1);
     auto end = std::chrono::high_resolution_clock::now();
-    return chrono::duration <double, nano> (end-start).count();
+    return chrono::duration<double, nano>(end - start).count();
 }
 
 
