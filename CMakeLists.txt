@@ -3,6 +3,6 @@ project(3_siaod)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(3_siaod n6/main.cpp)
+add_executable(3_siaod n7/main.cpp)
 
 # oop/main.cpp
