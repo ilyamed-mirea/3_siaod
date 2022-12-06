@@ -9,7 +9,7 @@
 struct Edge {
     int v; //from
     int w; //to
-    Edge(int v,int w);
+    Edge(int v = 0, int w = 0);
 };
 
 struct Graph {
@@ -17,7 +17,7 @@ struct Graph {
     int E; // количество ребер
     int **Matr; // матрица смежности
 
-    Graph(int N);
+    Graph(int N = 10);
 
     void addEdge(Edge edge);
 
@@ -28,16 +28,19 @@ struct Graph {
     void printGraphList();
 
     void dfs(int v, int *&L); //обход в глубину - Depth First Search
+
     int findRoot();
 
-    int findRoute(int a, int b);
+    void
+    dfs2(int a, int b, std::vector<std::vector<int>> &routes, std::vector<int> route); // обход для нахождения путей
+
+    std::vector<std::vector<int>> findAllRoutes(int a, int b);
 
     int findMaxRoute();
 
-    ~Graph();
-    void dfs2(int a,int b, int L[],std::vector<std::vector<int>> &routes, std::vector<int> route);
+    void shortestPath(int a, int b);
 
-   // std::vector<std::vector<int>> dfs2(int v, std::vector<int> &routes, int ind);
+    ~Graph();
 };
 
 #endif //INC_3_SIAOD_GRAPH_H
