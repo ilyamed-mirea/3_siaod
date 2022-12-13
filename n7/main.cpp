@@ -3,303 +3,129 @@
 //
 
 #include <iostream>
+#include <vector>
+#include <iomanip>
+
 using namespace std;
 
-const int M = 5; //size of array in row
-const int N = 7; //size of array in column
+bool isZeroBlock(vector<vector<int>> &matrix, int x0, int y0, int size);
 
-//function to find square block of zeros using Branches and Bounds method
-void findSquareBlock(int arr[M][N])
-{
-    bool flag = false; //flag variable to indicate if square block is found
-//loop through array
-    for(int i=0; i<M; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-//if current element is not zero, continue to next element
-            if(arr[i][j] != 0)
-                continue;
-//if current element is zero, check if next element in same row and next element in same column is also zero
-            else if(arr[i][j] == 0 && arr[i][j+1] == 0 && arr[i+1][j] == 0)
-            {
-                flag = true; //set flag to true
-//variables to store coordinates of square block
-                int x1 = i;
-                int y1 = j;
-                int x2 = i;
-                int y2 = j+1;
-//loop through remaining elements in row and column to find the end coordinates of square block
-                for(int k=j+1; k<N; k++)
-                {
-                    if(arr[i][k] == 0)
-                        y2++; //increment y2 coordinate
-                    else
-                        break;
-                }
-                for(int k=i+1; k<M; k++)
-                {
-                    if(arr[k][j] == 0)
-                        x2++; //increment x2 coordinate
-                    else
-                        break;
-                }
-//print out coordinates of square block
-                cout << "Square block found at coordinates: (" << x1 << ", " << y1 << ") to (" << x2 << ", " << y2 << ")" << endl;
-                return; //end function
-            }
-        }
-    }
-//if flag variable is still false, no square block is found
-    if(!flag)
-        cout << "No square block consisting of only zeros found" << endl;
-}
+int findMaxZeroBlock(vector<vector<int>> &matrix, int x, int y, int size);
 
-int main()
-{
-//initialize 2D array with size M*N
-    int arr[M][N] = {{1, 0, 1, 1, 1, 0, 1},
-                     {1, 0, 0, 0, 0, 0, 1},
-                     {1, 0, 0, 0, 0, 0, 1},
-                     {1, 1, 1, 1, 1, 1, 1},
-                     {1, 1, 1, 1, 1, 1, 1}};
+void fillMatrix(vector<vector<int>> &arr, int M, int N);
 
-    findSquareBlock(arr); //call function to find square block of zeros
-
-    return 0;
-}
-
-/* V3
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-
-// dimensions of the matrix
-const int M = 10;
-const int N = 10;
-int matrix[M][N];
-int maxSize = 0;
-int resX = 0;
-int resY = 0;
-
-void findZeroSquare(int x, int y, int size) {
-    // if the size of the square block is greater than the
-    // remaining size of the matrix, we cannot find a square
-    // block of zeros
-    if (size > std::min(M - x, N - y) || size < 2)
-        return;
-
-    // variable to keep track of whether the current square
-    // block contains only zeros or not
-    bool isZeroSquare = true;
-
-    // loop through the current square block and check if it
-    // contains only zeros
-    for (int i = x; i < x + size; i++)
-        for (int j = y; j < y + size; j++)
-            if (matrix[i][j] != 0) {
-                isZeroSquare = false;
-                break;
-            }
-
-    // if the current square block contains only zeros and its
-    // size is greater than the maximum size found so far, update
-    // the maximum size and the coordinates of the square block
-    if (isZeroSquare && size > maxSize) {
-        maxSize = size;
-        resX = x;
-        resY = y;
-    }
-
-    // if the current square block does not contain only zeros,
-    // we search for the solution in the four sub-blocks of the
-    // current square block
-    int half = ceil(size / 2.0);
-    findZeroSquare(x, y, half);
-    findZeroSquare(x, y + half, half);
-    findZeroSquare(x + half, y, half);
-    findZeroSquare(x + half, y + half, half);
-}
+void printMatrix(vector<vector<int>> &arr, int M, int N);
 
 int main() {
-    //fill the matrix
-    for (int i = 0; i < M; i++)
-        for (int j = 0; j < N; j++)
-            matrix[i][j] = rand() % 2;
-    //print matrix
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++)
-            std::cout << matrix[i][j] << " ";
-        std::cout << std::endl;
-    }
+    int M = 18; //rows - y
+    int N = 18; //cols - x
+    /*cout << "Enter matrix size(M): ";
+    cin >> M;
+    cout << "Enter matrix size(N): ";
+    cin >> N;*/
 
-// call the findZeroSquare function to find a square block of zeros
-// in the matrix starting from the top left corner (0, 0) with the
-// maximum possible size
-    findZeroSquare(0, 0, std::min(M, N));
-    std::cout << "Found a square block of zeros at (" << resX << ", " << resY << ") with size " << maxSize << std::endl;
+    vector<vector<int>> arr(M, vector<int>(N));
 
+    fillMatrix(arr, M, N);
+
+    printMatrix(arr, M, N);
+
+    //findMaxZeroBlock
+    int maxSize = 1;
+    int maxX = 0;
+    int maxY = 0;
+    for (int y = 0; y < arr.size(); y++)
+        for (int x = 0; x < arr[0].size(); x++)
+            if (arr[y][x] == 0) {
+                int curMax = findMaxZeroBlock(arr, x, y, maxSize);
+                if (curMax > maxSize) {
+                    maxSize = curMax;
+                    maxX = x + 1;
+                    maxY = y + 1;
+                }
+            }
+
+    cout << "Maximum square size is " << maxSize << endl;
+    cout << "Coordinates: (" << maxX << "; " << maxY << ")" << endl;
     return 0;
 }
-*/
-/* v2
 
-#include <iostream>
-#include <cstring>
-#include <algorithm>
-
-using namespace std;
-
-const int N=8;
-const int M=8;
-int a[N][N];
-int res = 0;
-int rCoord[2];
-
-// check if the submatrix starting at (x, y) with size k x k
-// contains only zeros
-bool check(int x, int y, int k) {
-    for (int i = x; i < x+k; i++) {
-        for (int j = y; j < y+k; j++) {
-            if (a[i][j] == 1) return false;
+bool isZeroBlock(vector<vector<int>> &matrix, int x0, int y0, int size) {
+    for (int y = y0; y < y0 + size; y++) {
+        for (int x = x0; x < x0 + size; x++) {
+            if (matrix[y][x] != 0) return false;
         }
     }
     return true;
 }
 
-// find the maximum size of a square submatrix containing only zeros
-void solve(int x, int y, int k) {
-    // if the submatrix is out of bounds, return
-    if (x + k > N || y + k > M) return;
-
-    // if the submatrix contains only zeros, update the result
-    if (check(x, y, k)) {
-        if (k > res) {
-            res = k;
-            rCoord[0] = x;
-            rCoord[1] = y;
-        }
-
-        // continue searching in the right and down directions
-        solve(x, y + 1, k);
-        solve(x + 1, y, k);
+int findMaxZeroBlock(vector<vector<int>> &matrix, int x, int y, int size) {
+    if (y + size > matrix.size() || x + size > matrix[0].size() || !isZeroBlock(matrix, x, y, size)) {
+        return size - 1; // Return the maximum size of the zero block found so far
     }
+    return findMaxZeroBlock(matrix, x, y, size + 1); // Continue expanding the block in all four directions
+}
 
-        // if the submatrix contains a 1, try a smaller size
-    else {
-        solve(x, y, k - 1);
+void fillMatrix(vector<vector<int>> &arr, int M, int N) {
+    int manual = -1;
+    //cout << "Enter 1 to enter matrix manually, 0 to generate random matrix or -1 to generate matrix with 1: ";
+    //cin >> manual;
+    if (manual == 1) {
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                cin >> arr[i][j];
+            }
+        }
+    } else if (manual == 0) {
+        bool flag = true;
+        while (flag) {
+            srand(time(NULL));
+            for (int y = 0; y < M; y++)
+                for (int x = 0; x < N; x++)
+                    arr.at(y).at(x) = (rand() % 2); //fill matrix with random values
+
+            int T = 4; //required max size of zero block
+            //check if there is a square with size T filled with 0
+            for (int y = 0; flag && y < M - T; y++)
+                for (int x = 0; flag && x < N - T; x++)
+                    if (isZeroBlock(arr, x, y, T)) {
+                        cout << "While creating a matrix found a square with size " << T << " filled with 0" << endl;
+                        cout << "Coordinates: " << "(" << x + 1 << "; " << y + 1 << ")" << endl;
+                        flag = false;
+                    }
+        }
+    } else {
+        for (int y = 0; y < M; y++)
+            for (int x = 0; x < N; x++)
+                arr.at(y).at(x) = 1; //fill matrix with random values
+
+        int T = 6; //required max size of zero block
+        //get random coordinates
+        srand(time(NULL));
+        int ry = rand() % (M - T);
+        srand(time(NULL));
+        int rx = rand() % (N - T);
+        //fill a square with size T with 0
+        for (int y = ry; y < ry + T; y++)
+            for (int x = rx; x < rx + T; x++)
+                arr.at(y).at(x) = 0;
+
+        cout << "Create a square with size " << T << " filled with 0" << endl;
+        cout << "Coordinates: " << "(" << rx + 1 << "; " << ry + 1 << ")" << endl;
     }
 }
 
-int main() {
-    // read the input
-    //cin >> N >> M;
-    bool flag = true;
-    while (flag) {
-        srand(time(NULL));
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                a[i][j] = (rand() % 2); //fill
-            }
-        }
-        for (int i = 0; i < M - 1; i++) {
-            for (int j = 0; j < N - 1; j++) { //check if there is a square with 0
-                if (a[i][j] == 0 && a[i][j + 1] == 0 && a[i + 1][j] == 0 && a[i + 1][j + 1] == 0) {
-                    flag = false;
-                    break;
-                }
-            }
-        }
+void printMatrix(vector<vector<int>> &arr, int M, int N) {
+    cout << endl << "x -> ";
+    for (int x = 1; x <= N; x++) {
+        cout << (x >= 10 ? x % 10 : x) << " ";
     }
     cout << endl;
-    //print block
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-            cout << a[i][j] << " ";
+    for (int y = 0; y < M; y++) {
+        cout << std::left << "y" << std::setw(2) << y + 1 << ": "; //print row index
+        for (int x = 0; x < N; x++) {
+            cout << arr.at(y).at(x) << " ";
         }
         cout << endl;
     }
-
-    // search for the maximum size square submatrix
-    solve(0, 0, min(N,M));
-
-    // print the result
-    cout << res << endl;
-    cout << rCoord[0] << " " << rCoord[1] << endl;
-
-    return 0;
 }
-
-*/
-/*
-#include <iostream>
-
-using namespace std;
-
-#include <cstdlib>
-#include <cmath>
-#include <vector>
-
-
-//write algorithm which using breach and bound for searching max square filled with 0 in block and print out his coordinates and size
-void branchandbound(int M, int N, vector<vector<int>> block, int square) {
-    if (M > square || N > square) {
-        for (int io = 0; io < 2; io++) {
-            for (int jo = 0; jo < 2; jo++) {
-                int newM = ceil(M / 2.0);
-                int newN = ceil(N / 2.0);
-                vector<vector<int>> slice(newM, vector<int>(newN));
-                for (int i = 0; i < newM; i++) {
-                    for (int j = 0; j < newN; j++) {
-                        slice.at(i).at(j) = block[i + io * newM][j + jo * newM];
-                    }
-                }
-                //print vector<vector<int>> slice
-                cout << endl << "slice" << endl;
-                for (int i = 0; i < newM; i++) {
-                    for (int j = 0; j < newN; j++) {
-                        cout << slice[i][j] << " ";
-                    }
-                    cout << endl;
-                }
-                branchandbound(newM, newN, slice, square);
-            }
-        }
-    }
-}
-
-
-int main() {
-    int M = 6, N = 6;
-    // cin >> M >> N;
-    vector<vector<int>> block(M, vector<int>(N));
-    bool flag = true;
-    while (flag) {
-        srand(time(NULL));
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                block.at(i).at(j) = (rand() % 2); //fill
-            }
-        }
-        for (int i = 0; i < M - 1; i++) {
-            for (int j = 0; j < N - 1; j++) { //check if there is a square with 0
-                if (block[i][j] == 0 && block[i][j + 1] == 0 && block[i + 1][j] == 0 && block[i + 1][j + 1] == 0) {
-                    flag = false;
-                    break;
-                }
-            }
-        }
-    }
-    cout << endl;
-    //print block
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-            cout << block[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    branchandbound(M, N, block, 2);
-    return 0;
-}
-*/
