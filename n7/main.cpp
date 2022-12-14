@@ -5,20 +5,25 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <chrono>
 
 using namespace std;
 
-bool isZeroBlock(vector<vector<int>> &matrix, int x0, int y0, int size);
+bool isZeroBlock(vector<vector<int>> matrix, int x0, int y0, int size);
 
-int findMaxZeroBlock(vector<vector<int>> &matrix, int x, int y, int size);
+int findMaxZeroBlock(vector<vector<int>> matrix, int x, int y, int size);
 
 void fillMatrix(vector<vector<int>> &arr, int M, int N);
 
-void printMatrix(vector<vector<int>> &arr, int M, int N);
+void printMatrix(vector<vector<int>> arr, int M, int N);
 
 int main() {
-    int M = 18; //rows - y
-    int N = 18; //cols - x
+    int M = 30; //rows - y
+    int N = 30; //cols - x
+    int maxSize = 1;
+    int maxX = 0;
+    int maxY = 0;
+    int pereborCount = 0;
     /*cout << "Enter matrix size(M): ";
     cin >> M;
     cout << "Enter matrix size(N): ";
@@ -31,26 +36,42 @@ int main() {
     printMatrix(arr, M, N);
 
     //findMaxZeroBlock
-    int maxSize = 1;
-    int maxX = 0;
-    int maxY = 0;
-    for (int y = 0; y < arr.size(); y++)
-        for (int x = 0; x < arr[0].size(); x++)
-            if (arr[y][x] == 0) {
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int y = 0; y < arr.size()-1; y++)
+        for (int x = 0; x < arr[0].size()-1; x++)
+            if (arr[y][x] == 0 && arr[y + 1][x] == 0 && arr[y][x + 1] == 0 && arr[y + 1][x + 1] == 0) {
                 int curMax = findMaxZeroBlock(arr, x, y, maxSize);
                 if (curMax > maxSize) {
                     maxSize = curMax;
                     maxX = x + 1;
                     maxY = y + 1;
                 }
+                pereborCount++;
             }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
 
-    cout << "Maximum square size is " << maxSize << endl;
+    cout << "Max size: " << maxSize << endl;
     cout << "Coordinates: (" << maxX << "; " << maxY << ")" << endl;
+    cout << "Branch and bound time: " << elapsed.count() << "s" << endl;
+    cout << "Branch and bound count: " << pereborCount << endl;
+
+    pereborCount = 0;
+    auto start2 = std::chrono::high_resolution_clock::now();
+    for (int y = 0; y < arr.size(); y++)
+        for (int x = 0; x < arr[0].size(); x++) {
+            findMaxZeroBlock(arr, x, y, 0);
+            pereborCount++;
+        }
+
+    auto end2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed2 = end2 - start2;
+    cout << "Classic time: " << elapsed2.count() << "s" << endl;
+    cout << "Classic count: " << pereborCount << endl;
     return 0;
 }
 
-bool isZeroBlock(vector<vector<int>> &matrix, int x0, int y0, int size) {
+bool isZeroBlock(vector<vector<int>> matrix, int x0, int y0, int size) {
     for (int y = y0; y < y0 + size; y++) {
         for (int x = x0; x < x0 + size; x++) {
             if (matrix[y][x] != 0) return false;
@@ -59,7 +80,7 @@ bool isZeroBlock(vector<vector<int>> &matrix, int x0, int y0, int size) {
     return true;
 }
 
-int findMaxZeroBlock(vector<vector<int>> &matrix, int x, int y, int size) {
+int findMaxZeroBlock(vector<vector<int>> matrix, int x, int y, int size) {
     if (y + size > matrix.size() || x + size > matrix[0].size() || !isZeroBlock(matrix, x, y, size)) {
         return size - 1; // Return the maximum size of the zero block found so far
     }
@@ -67,9 +88,10 @@ int findMaxZeroBlock(vector<vector<int>> &matrix, int x, int y, int size) {
 }
 
 void fillMatrix(vector<vector<int>> &arr, int M, int N) {
-    int manual = -1;
+    int manual = 0;
     //cout << "Enter 1 to enter matrix manually, 0 to generate random matrix or -1 to generate matrix with 1: ";
     //cin >> manual;
+    int T = 4; //required max size of zero block
     if (manual == 1) {
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
@@ -84,7 +106,6 @@ void fillMatrix(vector<vector<int>> &arr, int M, int N) {
                 for (int x = 0; x < N; x++)
                     arr.at(y).at(x) = (rand() % 2); //fill matrix with random values
 
-            int T = 4; //required max size of zero block
             //check if there is a square with size T filled with 0
             for (int y = 0; flag && y < M - T; y++)
                 for (int x = 0; flag && x < N - T; x++)
@@ -99,7 +120,6 @@ void fillMatrix(vector<vector<int>> &arr, int M, int N) {
             for (int x = 0; x < N; x++)
                 arr.at(y).at(x) = 1; //fill matrix with random values
 
-        int T = 6; //required max size of zero block
         //get random coordinates
         srand(time(NULL));
         int ry = rand() % (M - T);
@@ -115,7 +135,7 @@ void fillMatrix(vector<vector<int>> &arr, int M, int N) {
     }
 }
 
-void printMatrix(vector<vector<int>> &arr, int M, int N) {
+void printMatrix(vector<vector<int>> arr, int M, int N) {
     cout << endl << "x -> ";
     for (int x = 1; x <= N; x++) {
         cout << (x >= 10 ? x % 10 : x) << " ";
